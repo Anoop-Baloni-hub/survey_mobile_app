@@ -1,0 +1,92 @@
+class AppImage {
+  const AppImage._();
+
+  //icons
+  static const String appLogo = 'assets/images/rize_app.png';
+  static const String arrowIcon = 'assets/icons/arrow.png';
+  static const String calculatorIcon = 'assets/icons/calculator.png';
+  static const String calendarIcon = 'assets/icons/calendar.png';
+  static const String cardIcon = 'assets/icons/card.png';
+  static const String callIcon = 'assets/icons/call.png';
+  static const String documentIcon = 'assets/icons/document.png';
+  static const String editIcon = 'assets/icons/edit.png';
+  static const String galleryEditIcon = 'assets/icons/gallery_edit.png';
+  static const String globalIcon = 'assets/icons/global.png';
+  static const String homeIcon = 'assets/icons/home.png';
+  static const String logoutIcon = 'assets/icons/logout.png';
+  static const String mailIcon = 'assets/icons/mail.png';
+  static const String menuIcon = 'assets/icons/menu.png';
+  static const String messageIcon = 'assets/icons/message.png';
+  static const String moreIcon = 'assets/icons/more.png';
+  static const String roleIcon = 'assets/icons/role.png';
+  static const String supportIcon = 'assets/icons/support.png';
+  static const String tagIcon = 'assets/icons/tag.png';
+  static const String userIcon = 'assets/icons/user.png';
+  static const String verifiedIcon = 'assets/icons/verified.png';
+  static const String walletIcon = 'assets/icons/wallet.png';
+  static const String faqIcon = 'assets/icons/faq.png';
+  static const String backArrowIcon = 'assets/icons/back_arrow.png';
+  static const String bookmarkIcon = 'assets/icons/bookmark.png';
+  static const String doneIcon = 'assets/icons/done.png';
+  static const String durationIcon = 'assets/icons/duration.png';
+  static const String scheduleIcon = 'assets/icons/schedule.png';
+  static const String shareIcon = 'assets/icons/share.png';
+  static const String usdIcon = 'assets/icons/usd.png';
+  static const String layerIcon = 'assets/icons/layer.png';
+  static const String verticalDividerIcon = 'assets/icons/vertical_divider.png';
+  static const String bookIcon = 'assets/icons/book.png';
+  static const String flagIcon = 'assets/icons/flag.png';
+  static const String starIcon = 'assets/icons/star.png';
+  static const String personsIcon = 'assets/icons/persons.png';
+  static const String filterIcon = 'assets/icons/filter.png';
+  static const String frame1 = 'assets/icons/frame1.png';
+  static const String frame2 = 'assets/icons/frame2.png';
+  static const String frame3 = 'assets/icons/frame3.png';
+  static const String frame4 = 'assets/icons/frame4.png';
+  static const String investmentIcon = 'assets/icons/investment.png';
+  static const String nonQmIcon = 'assets/icons/non_qm.png';
+  static const String purchaseIcon = 'assets/icons/purchase.png';
+  static const String refinanceIcon = 'assets/icons/refinance.png';
+  static const String reverseMtgIcon = 'assets/icons/reverse_mtg.png';
+  static const String safeHomeIcon = 'assets/icons/safe-home.png';
+  static const String equityIcon = 'assets/icons/equity.png';
+  static const String percentageIcon = 'assets/icons/percentage.png';
+  static const String eyeOpenIcon = 'assets/icons/eye_open.png';
+  static const String eyeClosedIcon = 'assets/icons/eye_closed.png';
+  static const String orIcon = 'assets/icons/or.png';
+  static const String googleIcon = 'assets/icons/google.png';
+  static const String upIcon = 'assets/icons/up.png';
+  static const String scanIcon = 'assets/icons/scan.png';
+  static const String peopleIcon = 'assets/icons/people.png';
+  static const String downIcon = 'assets/icons/down.png';
+  static const String fbIcon = 'assets/icons/fb.png';
+  static const String dateIcon = 'assets/icons/date.png';
+  static const String flashIcon = 'assets/icons/flash.png';
+  static const String importIcon = 'assets/icons/import.png';
+  static const String registeredIcon = 'assets/icons/registered.png';
+  static const String settingIcon = 'assets/icons/setting.png';
+  static const String deleteIcon = 'assets/icons/delete.png';
+  static const String addIcon = 'assets/icons/add.png';
+  static const String backwardIcon = 'assets/icons/left.png';
+  static const String forwardIcon = 'assets/icons/right.png';
+  static const String vector = 'assets/icons/vector.png';
+  static const String group = 'assets/icons/group.png';
+  static const String check = 'assets/icons/check.png';
+  static const String profileCircle = 'assets/icons/iprofile-circle-thin.png';
+
+
+
+  //images
+  static const String bgImage = 'assets/images/bg.png';
+  static const String infoImage = 'assets/images/info.png';
+  static const String companyLogoImage = 'assets/images/company_logo.png';
+  static const String profileBgImage = 'assets/images/profile_bg.png';
+  static const String proposalBgImage = 'assets/images/proposal_bg.png';
+  static const String purpleBgImage = 'assets/images/purple_bg.png';
+  static const String qrImage = 'assets/images/qr.png';
+  static const String rizeImage = 'assets/images/rize.png';
+  static const String sharingBgImage = 'assets/images/sharing_bg.png';
+  static const String profileImage = 'assets/images/img_person.png';
+  static const String propertyBgImage = 'assets/images/property_bg.png';
+  static const String chartImage = 'assets/images/chart.png';
+}

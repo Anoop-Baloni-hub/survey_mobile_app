@@ -1,0 +1,41 @@
+import 'package:flutter/material.dart';
+
+class AppColor {
+  const AppColor._();
+  static const Color primaryColor = Color(0xFFF36C37);
+  static const Color orangeAB = Color(0xFFFFC3AB);
+  static const Color secondaryColor = Color(0xFF1C1A33);
+  static const Color offWhite = Color(0xFFF5F5F5);
+  static const Color lightBlueColor = Color(0xFFEEF6FF);
+  static const Color greyPurpleColor = Color(0xFF9894BC);
+  static const Color offGreyColor = Color(0xFFE8E8E8);
+  static const Color borderColor = Color(0xFFD5D3E9);
+  static const Color yellowColor = Color(0xFFFFC700);
+  static const Color lightYellowColor = Color(0xFFFFF4DE);
+  static const Color purpleColor = Color(0xFF9673FF);
+  static const Color darkPurpleColor = Color(0xFF5D5A7B);
+  static const Color greyLightColor = Color(0xFFEFEFEF);
+  static const Color lightPurpleColor = Color(0xFF595085);
+  static const Color lightPinkColor = Color(0xFFC93F8D);
+  static const Color offPinkColor = Color(0xFFD0CCFF);
+  static const Color accentPurpleColor = Color(0xFFE8E6FF);
+  static const Color accentRedColor = Color(0xFFFFF5F4);
+  static const Color accentGreenColor = Color(0xFFEAFFF0);
+  static const Color darkBluePurpleColor = Color(0xFF0D027F);
+  static const Color darkBlueColor = Color(0xFF040033);
+  static const Color darkRedColor = Color(0xFFF84D42);
+  static const Color redColor = Color(0xFFEA3226);
+  static const Color redGredientColor = Color(0xFFFFE2E6);
+  static const Color lightRedColor = Color(0xFFFF7067);
+  static const Color darkGreenColor = Color(0xFF0B7D2B);
+  static const Color greenColor = Color(0xFF26CA54);
+  static const Color greenGrediantColor = Color(0xFFDCFCE7);
+  static const Color greenLightColor = Color(0xFF36E968);
+  static const Color blueColor = Color(0xFF1F7BF4);
+  static const Color gredientColor = Color(0xFFF4E8FE);
+  static const Color accentBlueColor = Color(0xFF19B2FF);
+  static const Color whiteColor = Colors.white;
+  static const Color  blackColor = Colors.black;
+  static const Color greyColor = Colors.grey;
+  static const Color transparentColor = Colors.transparent;
+}
