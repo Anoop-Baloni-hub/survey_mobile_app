@@ -20,10 +20,13 @@ class AppColor {
   static const Color offPinkColor = Color(0xFFD0CCFF);
   static const Color accentPurpleColor = Color(0xFFE8E6FF);
   static const Color accentRedColor = Color(0xFFFFF5F4);
+  static const Color cardColor = Color(0xFFF8F8F8);
   static const Color accentGreenColor = Color(0xFFEAFFF0);
-  static const Color darkBluePurpleColor = Color(0xFF0D027F);
+  static const Color blueColor = Color(0xFF241C4F);
+  static const Color rizePurpleColor = Color(0xFF241C4F);
   static const Color darkBlueColor = Color(0xFF040033);
   static const Color darkRedColor = Color(0xFFF84D42);
+  static const Color saffronColor = Color(0xFFFF5D3A);
   static const Color redColor = Color(0xFFEA3226);
   static const Color redGredientColor = Color(0xFFFFE2E6);
   static const Color lightRedColor = Color(0xFFFF7067);
@@ -31,9 +34,9 @@ class AppColor {
   static const Color greenColor = Color(0xFF26CA54);
   static const Color greenGrediantColor = Color(0xFFDCFCE7);
   static const Color greenLightColor = Color(0xFF36E968);
-  static const Color blueColor = Color(0xFF1F7BF4);
   static const Color gredientColor = Color(0xFFF4E8FE);
   static const Color accentBlueColor = Color(0xFF19B2FF);
+  static const Color lightGreyColor = Color(0xFFD9D9D9);
   static const Color whiteColor = Colors.white;
   static const Color  blackColor = Colors.black;
   static const Color greyColor = Colors.grey;

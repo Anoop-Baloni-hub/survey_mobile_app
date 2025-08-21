@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:survey_app/Screens/HomeScreens/controllers/home_controller.dart';
 import 'package:survey_app/utils/app_color.dart';
 import 'package:survey_app/utils/app_text_style.dart';
 
@@ -26,8 +29,8 @@ class CommonDrawer extends StatelessWidget {
   final Widget? header;
   final VoidCallback? onLogout;
   final double width;
-
-  const CommonDrawer({
+  final Function(String route) onItemTap;
+   CommonDrawer({
     super.key,
     required this.items,
     this.selectedRoute,
@@ -35,7 +38,11 @@ class CommonDrawer extends StatelessWidget {
     this.header,
     this.onLogout,
     this.width = 280,
+     required this.onItemTap,
+
   });
+
+  final HomePageController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -54,55 +61,52 @@ class CommonDrawer extends StatelessWidget {
              Divider(height: 1.h, color: AppColor.darkBlueColor),
 
             Expanded(
-           child: ListView.builder(
-    padding: EdgeInsets.symmetric(vertical: 16.h),
-    itemCount: items.length,
-    itemBuilder: (context, i) {
-    final e = items[i];
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                itemCount: items.length,
+                itemBuilder: (context, i) {
+                  final e = items[i];
 
-    final byRoute = (e.route != null && e.route == selectedRoute);
-    final byIndex = (selectedRoute == null && i == defaultSelectedIndex);
-    final selected = byRoute || byIndex;
-    final bg = selected ? pill : AppColor.transparentColor;
-    final fg = selected ? Colors.white : Colors.black87;
+                  return Obx(() {
+                    final selected = controller.selectedRoute.value == e.route;
+                    final bg = selected ? AppColor.secondaryColor : AppColor.transparentColor;
+                    final fg = selected ? AppColor.whiteColor : AppColor.blackColor;
 
-    return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-    child: InkWell(
-    borderRadius: BorderRadius.circular(12.r),
-    onTap: () {
-   // Navigator.of(context).maybePop();
-      Navigator.of(context).pop();
-      if (e.onTap != null) {
-        e.onTap!();
-        return;
-      }
-      if (e.route != null && e.route!.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).pushNamed(e.route!);
-          // or:
-          // Navigator.of(context).pushReplacementNamed(e.route!);
-          // Navigator.of(context).pushNamedAndRemoveUntil(e.route!, (r) => false);
-        });
-      }
-    },
-    child: Container(
-    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-    decoration: BoxDecoration(
-    color: bg,
-    borderRadius: BorderRadius.circular(12.r),
-    ),
-    child: Row(
-    children: [
-    IconTheme.merge(
-    data: IconThemeData(color: fg),
-    child: e.leading,
-    ),
-      w(12),
-    Text(e.label, style: AppTextStyle.medium14(fg)),
-    ]))),
-        );})
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12.r),
+                        onTap: () {
+                          controller.setSelectedRoute(e.route!);
+                          Navigator.of(context).pop();
+                          if (Get.currentRoute != e.route) {
+                            Get.offNamed(e.route!);
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                          decoration: BoxDecoration(
+                            color: bg,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Row(
+                            children: [
+                              IconTheme.merge(
+                                data: IconThemeData(color: fg),
+                                child: e.leading,
+                              ),
+                              w(12),
+                              Text(e.label, style: AppTextStyle.medium14(fg)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+                },
+              ),
             ),
+
 
             if (onLogout != null)
               Padding(

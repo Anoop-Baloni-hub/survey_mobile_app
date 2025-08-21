@@ -1,9 +1,14 @@
 import 'package:get/get.dart';
+import 'package:survey_app/Screens/Campaign/Views/camaign_screen.dart';
+import 'package:survey_app/Screens/Campaign/bindings/campaign_binding.dart';
 import 'package:survey_app/Screens/HomeScreens/bindings/home_binding.dart';
 import 'package:survey_app/Screens/HomeScreens/view/home_page.dart';
 import 'package:survey_app/Screens/QuestionBank/bindings/question_bank_binding.dart';
 import 'package:survey_app/Screens/QuestionBank/view/question_bank.dart';
+import 'package:survey_app/Screens/Users/Views/user_screen.dart';
+import 'package:survey_app/Screens/Users/bindings/users_binding.dart';
 
+import '../Screens/Campaign/Views/campaign_dashboard.dart';
 import '../Screens/authentication/bindings/login_page_bindings.dart';
 import '../Screens/authentication/view/login_page_view.dart';
 
@@ -31,16 +36,20 @@ class AppPages {
       binding: QuestionBankBinding(),
     ),
 
-
-    // GetPage(
-    //   name: _Paths.home,
-    //   page: () => const AppShell(child: HomePageView()),
-    //   binding: HomePageBinding(),
-    // ),
-    // GetPage(
-    //   name: _Paths.questionBank,
-    //   page:() => const AppShell(child: QuestionBank()),
-    //   binding: QuestionBankBinding(),
-    // ),
+    GetPage(
+      name: _Paths.campaign,
+      page: () => const CampaignScreen(),
+      binding: CampaignBinding(),
+    ),
+    GetPage(
+      name: _Paths.users,
+      page: () => const UserScreen(),
+      binding: UsersBinding(),
+    ),
+    GetPage(
+      name: _Paths.campaignDashBoard,
+      page: () => const CampaignDashboard(),
+      binding: UsersBinding(),
+    ),
   ];
 }

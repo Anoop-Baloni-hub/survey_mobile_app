@@ -12,6 +12,9 @@ abstract class Routes {
   static const viewProfile = _Paths.viewProfile;
   static const editProfile = _Paths.editProfile;
   static const settingsPage = _Paths.settingsPage;
+  static const campaign = _Paths.campaign;
+  static const users = _Paths.users;
+  static const campaignDashBoard = _Paths.campaignDashBoard;
 
 }
 
@@ -26,5 +29,8 @@ abstract class _Paths {
   static const viewProfile = '/viewProfile';
   static const editProfile = '/editProfile';
   static const settingsPage = '/settingsPage';
+  static const campaign = '/campaign';
+  static const users = '/users';
+  static const campaignDashBoard = '/campaignDashBoard';
 
 }

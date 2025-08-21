@@ -100,7 +100,7 @@ class _CustomTextInputState extends State<CustomTextInput> {
       autovalidateMode: widget.autoValidateMode,
       decoration: InputDecoration(
         hintText: widget.hintTextString,
-        hintStyle: AppTextStyle.regular14(AppColor.greyPurpleColor,),
+        hintStyle: AppTextStyle.regular14(AppColor.greyColor,),
         isDense: widget.isDense ?? false,
         contentPadding: widget.contentPadding,
         prefixIconColor: widget.prefixIconColor,
@@ -155,7 +155,7 @@ class _CustomTextInputState extends State<CustomTextInput> {
   OutlineInputBorder outlineInputBorder() {
     return OutlineInputBorder(
       borderRadius:
-          BorderRadius.all(Radius.circular(widget.cornerRadius ?? 12.r)),
+          BorderRadius.all(Radius.circular(widget.cornerRadius ?? 8.r)),
       borderSide: BorderSide(
         color: widget.borderColor ?? Theme.of(context).primaryColor,
       ),

@@ -2,7 +2,7 @@ class AppImage {
   const AppImage._();
 
   //icons
-  static const String appLogo = 'assets/images/rize_app.png';
+  static const String appLogo = 'assets/images/survey.png';
   static const String arrowIcon = 'assets/icons/arrow.png';
   static const String calculatorIcon = 'assets/icons/calculator.png';
   static const String calendarIcon = 'assets/icons/calendar.png';
@@ -43,6 +43,7 @@ class AppImage {
   static const String frame2 = 'assets/icons/frame2.png';
   static const String frame3 = 'assets/icons/frame3.png';
   static const String frame4 = 'assets/icons/frame4.png';
+  static const String jam = 'assets/icons/jam_document.png';
   static const String investmentIcon = 'assets/icons/investment.png';
   static const String nonQmIcon = 'assets/icons/non_qm.png';
   static const String purchaseIcon = 'assets/icons/purchase.png';
@@ -71,8 +72,11 @@ class AppImage {
   static const String forwardIcon = 'assets/icons/right.png';
   static const String vector = 'assets/icons/vector.png';
   static const String group = 'assets/icons/group.png';
+  static const String charmCircle = 'assets/icons/charmCircleTick.png';
   static const String check = 'assets/icons/check.png';
   static const String profileCircle = 'assets/icons/iprofile-circle-thin.png';
+  static const String arrow1 = 'assets/icons/arrow1.png';
+  static const String mingcute = 'assets/icons/mingcute.png';
 
 
 

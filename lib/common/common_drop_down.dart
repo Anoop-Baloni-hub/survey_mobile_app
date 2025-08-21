@@ -9,52 +9,43 @@ class CommonDropdownButton<T> extends StatelessWidget {
   final T? value;
   final ValueChanged<T?> onChanged;
   final String hintText;
-  final double height;
   final bool? isExpanded;
 
-   const CommonDropdownButton({
+  const CommonDropdownButton({
     super.key,
     required this.items,
     required this.value,
     required this.onChanged,
     this.hintText = '',
-    this.height = 36.0,
-    this.isExpanded = false,
+    this.isExpanded = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColor.borderColor),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: DropdownButton<T>(
-        isExpanded: isExpanded?? false,
-        underline: const SizedBox(),
-        icon: const Icon(
-          Icons.keyboard_arrow_down_outlined,
-          color: AppColor.primaryColor,
+    return DropdownButtonFormField<T>(
+      isExpanded: isExpanded ?? true,
+      value: items.any((item) => item.value == value) ? value : null,
+      items: items,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: hintText, // floating hint on the border
+        labelStyle: AppTextStyle.regular14(AppColor.greyPurpleColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: AppColor.blackColor),
         ),
-        hint: Text(
-          hintText,
-          overflow: TextOverflow.ellipsis,
-          style:  AppTextStyle.regular14(AppColor.greyPurpleColor),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: const BorderSide(color: AppColor.blackColor),
         ),
-        value: value,
-        items: items.map((DropdownMenuItem<T> item) {
-          return DropdownMenuItem<T>(
-            value: item.value,
-            child: Text(
-              item.value.toString(),
-              style: AppTextStyle.medium14(AppColor.blackColor),
-            ),
-          );
-        }).toList(),
-        onChanged: onChanged,
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
       ),
+      icon: const Icon(
+        Icons.arrow_drop_down,
+        color: AppColor.blackColor,
+      ),
+      dropdownColor: Colors.white,
     );
   }
 }
+

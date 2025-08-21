@@ -9,6 +9,7 @@ import '../utils/app_color.dart';
 import '../utils/app_image.dart';
 import '../utils/app_text_style.dart';
 import 'common_flex.dart';
+import 'package:flutter/material.dart';
 //
 // Widget appBar({
 //   required String icon,
@@ -127,60 +128,60 @@ import 'common_flex.dart';
 //
 //
 //
-// Widget fillButtonWithIcon({
-//   required String icon,
-//   required String title,
-//   bool isExpand = true,
-//   double? height,
-//   double? width,
-//   Color? buttonBackgroundColor,
-//   Color? iconColor,
-//   Color? titleColor,
-//   Color? borderColor,
-//   bool enabledBorder = false,
-//   VoidCallback? onPressed,
-// }) {
-//   return sizedBox(
-//     width: isExpand ? double.infinity : width,
-//     height: height ?? 42,
-//     child: FilledButton(
-//       style: ButtonStyle(
-//         backgroundColor: WidgetStateProperty.all(buttonBackgroundColor),
-//         shape: WidgetStateProperty.all(
-//           RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(8.r),
-//           ),
-//         ),
-//         side: enabledBorder
-//             ? WidgetStateProperty.all(
-//                 BorderSide(
-//                   color: borderColor ?? AppColor.borderColor,
-//                   width: 1.w,
-//                 ),
-//               )
-//             : null,
-//       ),
-//       onPressed: onPressed,
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Image.asset(
-//             icon,
-//             height: 16.h,
-//             color: iconColor,
-//             width: 16.h,
-//           ),
-//           w(8),
-//           Text(
-//             title,
-//             style: AppTextStyle.medium14(titleColor ?? AppColor.blackColor),
-//           ),
-//         ],
-//       ),
-//     ),
-//   );
-// }
-//
+Widget fillButtonWithIcon({
+  required String icon,
+  required String title,
+  bool isExpand = true,
+  double? height,
+  double? width,
+  Color? buttonBackgroundColor,
+  Color? iconColor,
+  Color? titleColor,
+  Color? borderColor,
+  bool enabledBorder = false,
+  VoidCallback? onPressed,
+}) {
+  return sizedBox(
+    width: isExpand ? double.infinity : width,
+    height: height ?? 42,
+    child: FilledButton(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(buttonBackgroundColor),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+        ),
+        side: enabledBorder
+            ? WidgetStateProperty.all(
+                BorderSide(
+                  color: borderColor ?? AppColor.borderColor,
+                  width: 1.w,
+                ),
+              )
+            : null,
+      ),
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            icon,
+            height: 16.h,
+            color: iconColor,
+            width: 16.h,
+          ),
+          w(8),
+          Text(
+            title,
+            style: AppTextStyle.medium14(titleColor ?? AppColor.blackColor),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 Widget fillButton({
   required String title,
   double? height,
@@ -797,198 +798,239 @@ Widget fillButton({
 //   );
 // }
 //
-// Widget detailContainer({
-//   required String title,
-//   required String count,
-//   required String percentage,
-//   required String image,
-//   required bool isProfit,
-// }){
-//   return  Expanded(
-//     child: Container(
-//       padding: EdgeInsets.all(12.r),
-//       decoration: BoxDecoration(
-//         borderRadius: BorderRadius.circular(12.r),
-//         color: AppColor.greyColor.withOpacity(0.05),
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Row(
-//             children: [
-//               Text(
-//                 count,
-//                 style: AppTextStyle.semiBold24( AppColor.blackColor),
-//               ),
-//               spacer(),
-//               Image.asset(
-//                 image,
-//                 color: AppColor.primaryColor,
-//                 height: 24.h,
-//                 width: 24.h,
-//               ),
-//             ],
-//           ),
-//           h(6),
-//           Text(
-//             title,
-//             style: AppTextStyle.regular12(
-//               AppColor.darkPurpleColor,
-//             ),
-//           ),
-//           h(6),
-//           Row(
-//             children: [
-//               Container(
-//                 padding: EdgeInsets.symmetric(
-//                   horizontal: 10.w,
-//                   vertical: 4.h,
-//                 ),
-//                 decoration: BoxDecoration(
-//                   color: isProfit ?AppColor.accentGreenColor: AppColor.accentRedColor,
-//                   borderRadius: BorderRadius.circular(14.r),
-//                   border: Border.all(color:isProfit ?AppColor.greenColor: AppColor.redColor),
-//                 ),
-//                 child: Text(
-//                   percentage,
-//                   style: AppTextStyle.regular12(
-//                     isProfit ? AppColor.darkGreenColor : AppColor.redColor,
-//                   ),
-//                 ),
-//               ),
-//               w(6),
-//               Image.asset(
-//                 isProfit ? AppImage.upIcon : AppImage.downIcon,
-//                 color: isProfit ? AppColor.greenColor : AppColor.redColor,
-//                 height: 8.h,
-//                 width: 8.h,
-//               ),
-//             ],
-//           ),
-//           h(6),
-//           Text(
-//             "than last month",
-//             style: AppTextStyle.regular12(
-//               AppColor.darkPurpleColor,
-//             ),
-//           ),
-//         ],
-//       ),
-//     ),
-//   );
-// }
-// class DashedRoundedBorderPainter extends CustomPainter {
-//   final bool selected;
-//
-//   DashedRoundedBorderPainter({
-//     this.selected = false,
-//   });
-//
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     double dashWidth = 4;
-//     double dashSpace = 4;
-//     double borderRadius = 10.r;
-//     final paint = Paint()
-//       ..color = selected ? AppColor.primaryColor : AppColor.borderColor
-//       ..strokeWidth = 2
-//       ..style = PaintingStyle.stroke;
-//     final roundedRect = RRect.fromRectAndRadius(
-//       Offset.zero & size,
-//       Radius.circular(borderRadius),
-//     );
-//     final path = Path()..addRRect(roundedRect);
-//     final dashPath = createDashedPath(path, dashWidth, dashSpace);
-//     canvas.drawPath(dashPath, paint);
-//   }
-//
-//   Path createDashedPath(Path source, double dashWidth, double dashSpace) {
-//     final Path dashedPath = Path();
-//     final PathMetrics pathMetrics = source.computeMetrics();
-//
-//     for (final PathMetric pathMetric in pathMetrics) {
-//       double distance = 0.0;
-//       while (distance < pathMetric.length) {
-//         final nextDashLength = distance + dashWidth < pathMetric.length
-//             ? dashWidth
-//             : pathMetric.length - distance;
-//         dashedPath.addPath(
-//           pathMetric.extractPath(distance, distance + nextDashLength),
-//           Offset.zero,
-//         );
-//         distance += dashWidth + dashSpace;
-//       }
-//     }
-//     return dashedPath;
-//   }
-//
-//   @override
-//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-// }
-//
-// Widget loanPurposeButton({
-//   required Function() onTap,
-//   required String title,
-//   required String subTitle,
-//   required RxBool isSelected,
-// }) {
-//   return Obx(
-//         () => CustomPaint(
-//       painter: DashedRoundedBorderPainter(selected: isSelected.value),
-//       child: InkWell(
-//         onTap: onTap,
-//         child: Ink(
-//           padding:
-//           EdgeInsets.only(top: 24.h, left: 30.w, right: 16.w, bottom: 24.h),
-//           decoration: BoxDecoration(
-//             color: isSelected.value
-//                 ? AppColor.lightBlueColor
-//                 : AppColor.whiteColor,
-//             borderRadius: BorderRadius.all(Radius.circular(10.r)),
-//           ),
-//           child: Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Container(
-//                 height: 20.h,
-//                 width: 20.w,
-//                 decoration: BoxDecoration(
-//                   color: AppColor.whiteColor,
-//                   shape: BoxShape.circle,
-//                   border: Border.all(
-//                     color: isSelected.value
-//                         ? AppColor.primaryColor
-//                         : AppColor.borderColor,
-//                     width: isSelected.value ? 6 : 1,
-//                   ),
-//                 ),
-//               ),
-//               w(10),
-//               Expanded(
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     h(2),
-//                     Text(
-//                       title,
-//                       style: isSelected.value
-//                           ? AppTextStyle.semiBold16(AppColor.primaryColor)
-//                           : AppTextStyle.semiBold16(AppColor.blackColor),
-//                     ),
-//                     h(8),
-//                     Text(
-//                       subTitle,
-//                       style: isSelected.value
-//                           ? AppTextStyle.regular14(AppColor.primaryColor)
-//                           : AppTextStyle.regular14(AppColor.blackColor),
-//                     ),
-//                   ],
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     ),
-//   );
-// }
+Widget detailContainer({
+  required String title,
+  required String id,
+}){
+  return  Expanded(
+    child: Container(
+      padding: EdgeInsets.all(12.r),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.r),
+        color: AppColor.lightGreyColor,
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                id,
+                style: AppTextStyle.semiBold14( AppColor.darkPurpleColor),
+              ),
+              w(10),
+              Text(
+                title,
+                style: AppTextStyle.semiBold14(
+                  AppColor.greyColor,
+                ),
+              ),
+              h(6),
+            ],
+          ),
+          h(20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: (){},
+                child: const Icon(Icons.edit,size: 25,color: AppColor.greyColor,),
+              ),
+              w(15),
+              GestureDetector(
+                onTap: (){},
+                child: const Icon(Icons.copy,size: 25,color: AppColor.greyColor,),
+              ),
+              w(15),
+              GestureDetector(
+                onTap: (){},
+                child: const Icon(Icons.delete,size: 25,color: AppColor.greyColor,),
+              ),
+            ],
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+class ActionItemCard extends StatefulWidget {
+  final String? id;
+  final String? title;
+  final String? text;
+  final VoidCallback? onEdit;
+  final VoidCallback? onCopy;
+  final VoidCallback? onDelete;
+  final VoidCallback? onRefresh;
+  final bool isRefreshScreen;
+  final String? name;
+  final String? gmail;
+  final List<Map<String, String>>? details;
+
+  const ActionItemCard({
+    Key? key,
+     this.id,
+     this.title,
+     this.text,
+     this.onEdit,
+     this.onCopy,
+     this.onDelete,
+     this.onRefresh,
+    this.name,
+    this.gmail,
+    this.details,
+    this.isRefreshScreen = false
+  }) : super(key: key);
+
+  @override
+  State<ActionItemCard> createState() => ActionItemCardState();
+}
+class ActionItemCardState extends State<ActionItemCard> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> actionButtons() {
+      if (widget.isRefreshScreen) {
+        return [
+          if (widget.onRefresh != null)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: widget.onRefresh,
+            ),
+        ];
+      } else {
+        return [
+          if (widget.onEdit != null)
+            IconButton(icon: const Icon(Icons.edit), onPressed: widget.onEdit),
+          if (widget.onCopy != null)
+            IconButton(icon: const Icon(Icons.copy), onPressed: widget.onCopy),
+          if (widget.onDelete != null)
+            IconButton(icon: const Icon(Icons.delete), onPressed: widget.onDelete),
+        ];
+      }
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      child: Card(
+        color: AppColor.cardColor.withOpacity(0.8),
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.name != null) Text(widget.name!),
+                  if (widget.gmail != null) Text(widget.gmail!),
+                  if (widget.id != null && widget.title != null)
+                    Row(
+                      children: [
+                        Text(
+                          widget.id!,
+                          style: AppTextStyle.semiBold10(AppColor.blueColor),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            widget.title!,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyle.semiBold11(AppColor.greyColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+              ),
+            ),
+            // Collapsed actions
+            if (!isExpanded)
+              Padding(
+                padding: EdgeInsets.only(left: 12.w, bottom: 8.h),
+                child: Row(children: actionButtons()),
+              ),
+            // Expanded details + actions
+            if (isExpanded && widget.details != null) ...[
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: widget.details!
+                      .map((detail) => DetailRow(
+                    label: detail["label"] ?? "",
+                    value: detail["value"] ?? "",
+                  ))
+                      .toList(),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: actionButtons(),
+                ),
+              ),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+class DetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const DetailRow({required this.label, required this.value, Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding:  EdgeInsets.only(bottom: 6.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100.w,
+            child: Text(
+              "$label : ",
+              style:  AppTextStyle.semiBold10(AppColor.blueColor),
+            ),
+          ),
+         spacer(),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+}
+
+
+class UserModel {
+  final String name;
+  final String email;
+  final List<Map<String, String>> details;
+
+  UserModel({
+    required this.name,
+    required this.email,
+    required this.details,
+  });
+}
