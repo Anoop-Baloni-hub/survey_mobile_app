@@ -47,7 +47,7 @@ class CampaignScreen extends GetView<CampaignController>{
                           backgroundColor: controller.selectedIndex.value == 0
                               ? AppColor.rizePurpleColor
                               : Colors.transparent,
-                          side: BorderSide(color: AppColor.blackColor, width: 1),
+                          side: const BorderSide(color: AppColor.blackColor, width: 1),
                         ),
                         child: Text(
                           'All',
@@ -102,32 +102,64 @@ class CampaignScreen extends GetView<CampaignController>{
                         ),
                       ),
                       SizedBox(width: 20.w), // spacing
-                      Container(
-                        height: 32.h,
-                        width: 75.w,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColor.lightGreyColor),
-                        ),
-                        child: Padding(
-                          padding:  EdgeInsets.symmetric(horizontal: 3.w),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "Short By",
-                                style: AppTextStyle.medium12(AppColor.greyColor),
+                      Obx(() {
+                        return GestureDetector(
+                          onTap: () async {
+                            final RenderBox box = context.findRenderObject() as RenderBox;
+                            final Offset position = box.localToGlobal(Offset.zero);
+
+                            final result = await showMenu(
+                              color: AppColor.offWhite,
+                              context: context,
+                              position: RelativeRect.fromLTRB(
+                                position.dx + box.size.width,
+                                position.dy,
+                                0, 0,
                               ),
-                              w(3),// small gap
-                              const Icon(
-                                Icons.swap_vert,
-                                color: AppColor.greyColor,
-                                size: 16, // adjust as per your design
+                              items: controller.sortOptions.map((option) {
+                                return PopupMenuItem(
+                                  value: option,
+                                  child: Container(
+                                   // color:  AppColor.greyColor,
+                                    padding:  EdgeInsets.symmetric(vertical: 6.h, horizontal: 8.w),
+                                    child: Text(option, style:AppTextStyle.semiBold12(AppColor.blackColor)),
+                                  ),
+                                );
+                              }).toList(),
+                            );
+
+                            if (result != null) {
+                              controller.changeSort(result);
+                            }
+                          },
+                          child: Container(
+                            height: 32.h,
+                            width: 75.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColor.lightGreyColor),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 3.w),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    controller.selectedSort.value,
+                                    style: AppTextStyle.medium12(AppColor.greyColor),
+                                  ),
+                                  w(3),
+                                  const Icon(
+                                    Icons.swap_vert,
+                                    color: AppColor.greyColor,
+                                    size: 16,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -318,7 +350,7 @@ class CampaignScreen extends GetView<CampaignController>{
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 1,
+                  itemCount: 3,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding:  EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
@@ -456,7 +488,7 @@ class CampaignScreen extends GetView<CampaignController>{
                                      Expanded(
                                        child: Row(
                                          mainAxisAlignment: MainAxisAlignment.end,
-                                       
+
                                          children: [
                                            GestureDetector(
                                                onTap:(){

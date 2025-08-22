@@ -15,6 +15,7 @@ abstract class Routes {
   static const campaign = _Paths.campaign;
   static const users = _Paths.users;
   static const campaignDashBoard = _Paths.campaignDashBoard;
+  static const surveyScreen = _Paths.surveyScreen;
 
 }
 
@@ -32,5 +33,6 @@ abstract class _Paths {
   static const campaign = '/campaign';
   static const users = '/users';
   static const campaignDashBoard = '/campaignDashBoard';
+  static const surveyScreen = '/surveyScreen';
 
 }

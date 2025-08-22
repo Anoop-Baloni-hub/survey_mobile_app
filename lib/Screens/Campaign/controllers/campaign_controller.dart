@@ -9,10 +9,23 @@ import '../../../utils/app_image.dart';
 class CampaignController extends GetxController with GetSingleTickerProviderStateMixin{
 
   var selectedIndex = 0.obs;
+  var isMandatory = false.obs;
   TextEditingController textController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
+  TextEditingController surveyTextController = TextEditingController();
+  TextEditingController surveyStartDateController = TextEditingController();
+  TextEditingController surveyEndDateController = TextEditingController();
+
+
+  final selectList = <String, bool>{
+    'Days': false,
+    'Weeks': false,
+    'Months': false,
+    'Years': false,
+  }.obs;
+
   final categoryList = <String, bool>{
     'Mortgage': false,
     'Real State': false,
@@ -32,18 +45,68 @@ class CampaignController extends GetxController with GetSingleTickerProviderStat
     AppImage.frame4,
   ];
 
+
+  var inviteReviewer = false.obs;
+  RxInt currentStep = 1.obs;
+  final int totalSteps = 4;
+  void nextStep() {
+    if (currentStep.value < totalSteps) {
+      currentStep.value++;
+    }
+  }
+
+  void previousStep() {
+    if (currentStep.value > 1) {
+      currentStep.value--;
+    }
+  }
+
   late TabController tabController;
+  var selectedSort = "Sort By".obs;
+  final List<String> sortOptions = ["Last Modified", "Most Responses", "Ending soon"];
+
+  void changeSort(String value) {
+    selectedSort.value = value;
+  }
+
+  var filteredCampaigns = <String>[].obs;
+  final List<String> allCampaigns = [
+    "Rize ",
+    "Winter Discount",
+    "Diwali Offer",
+    "Black Friday",
+    "Christmas Deals",
+  ];
 
   @override
   void onInit() {
     super.onInit();
     tabController = TabController(length: 4, vsync: this);
+
+    //search campaign logic======
+    filteredCampaigns.assignAll(allCampaigns);
+    textController.addListener(() {
+      filterCampaigns(textController.text);
+    });
   }
 
   @override
   void onClose() {
     tabController.dispose();
     super.onClose();
+  }
+
+
+  void filterCampaigns(String query) {
+    if (query.isEmpty) {
+      filteredCampaigns.assignAll(allCampaigns);
+    } else {
+      filteredCampaigns.assignAll(
+        allCampaigns.where(
+              (c) => c.toLowerCase().contains(query.toLowerCase()),
+        ),
+      );
+    }
   }
 
 }

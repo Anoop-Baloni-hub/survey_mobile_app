@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:survey_app/Screens/Campaign/Views/camaign_screen.dart';
+import 'package:survey_app/Screens/Campaign/Views/create_new_survey_screen.dart';
 import 'package:survey_app/Screens/Campaign/bindings/campaign_binding.dart';
 import 'package:survey_app/Screens/HomeScreens/bindings/home_binding.dart';
 import 'package:survey_app/Screens/HomeScreens/view/home_page.dart';
@@ -49,7 +50,12 @@ class AppPages {
     GetPage(
       name: _Paths.campaignDashBoard,
       page: () => const CampaignDashboard(),
-      binding: UsersBinding(),
+      binding: CampaignBinding(),
+    ),
+    GetPage(
+      name: _Paths.surveyScreen,
+      page: () => const CreateNewSurveyScreen(),
+      binding: CampaignBinding(),
     ),
   ];
 }

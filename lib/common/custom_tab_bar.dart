@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
+import '../nav/app_pages.dart';
 import '../utils/app_color.dart';
 import '../utils/app_text_style.dart';
 import 'common_flex.dart';
@@ -43,7 +46,9 @@ Widget allTabContent() {
       children: [
         h(20),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Get.toNamed(Routes.surveyScreen);
+          },
           child: Container(
             height: 180.h,
             width: 180.w,
@@ -60,13 +65,12 @@ Widget allTabContent() {
               children: [
                 CircleAvatar(
                   radius: 18.r,
-                  backgroundColor: const Color(0xFF2D1C64), // dark purple
-                  child: const Icon(Icons.add, color: Colors.white),
+                  backgroundColor:AppColor.blueColor,
+                  child: const Icon(Icons.add, color: AppColor.whiteColor),
                 ),
                 h(10),
                 Text(
-                  "Create New",
-                  style: AppTextStyle.medium14(AppColor.blackColor),
+                  "Create New", style: AppTextStyle.medium14(AppColor.blackColor),
                 ),
                 Text(
                   "Survey",
@@ -76,9 +80,7 @@ Widget allTabContent() {
             ),
           ),
         ),
-
         h(20),
-
         // Info message
         Text(
           "You haven’t created any Survey yet…",
