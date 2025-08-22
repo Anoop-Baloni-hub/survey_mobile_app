@@ -19,41 +19,194 @@ import '../../../utils/app_color.dart';
 import '../../../utils/app_image.dart';
 
 class QuestionBank extends GetView<QuestionBankController> {
-
   const QuestionBank({super.key});
 
   @override
   Widget build(BuildContext context) {
     final _scaffoldKey = GlobalKey<ScaffoldState>();
-    return Scaffold(
-        backgroundColor: AppColor.offWhite,
-        key: _scaffoldKey,
-        drawerEnableOpenDragGesture: true,
-        drawer: CommonDrawer(
-          header: SizedBox(
-            height: 50,
-            child: Image.asset(AppImage.appLogo, fit: BoxFit.contain),
-          ),
-          items: [
-            DrawerItem(label: 'DashBoard', leading: Image.asset(AppImage.vector),route: Routes.home),
-            DrawerItem(label: 'Question Bank', leading: Image.asset(AppImage.group),route: Routes.home),
-            DrawerItem(label: 'Campaign', leading: Image.asset(AppImage.check)),
-            DrawerItem(label: 'Users', leading: Image.asset(AppImage.profileCircle)),
+
+    return AppShell(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            divider(),
+            // Tab Buttons
+            Obx(() {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      controller.selectedIndex.value = 0; // Question
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: controller.selectedIndex.value == 0
+                          ? AppColor.rizePurpleColor
+                          : Colors.transparent,
+                      side: BorderSide(
+                          color: AppColor.blackColor.withOpacity(0.4), width: 1),
+                    ),
+                    child: Text(
+                      "List of Question",
+                      style: AppTextStyle.semiBold13(
+                        controller.selectedIndex.value == 0
+                            ? AppColor.whiteColor
+                            : AppColor.blackColor.withOpacity(0.4),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  ElevatedButton(
+                    onPressed: () {
+                      controller.selectedIndex.value = 1; // Answer Choice
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: controller.selectedIndex.value == 1
+                          ? AppColor.rizePurpleColor
+                          : Colors.transparent,
+                      side: BorderSide(
+                          color: AppColor.blackColor.withOpacity(0.4), width: 1),
+                    ),
+                    child: Text(
+                      "Answer Choice Groups",
+                      style: AppTextStyle.semiBold13(
+                        controller.selectedIndex.value == 1
+                            ? AppColor.whiteColor
+                            : AppColor.blackColor.withOpacity(0.4),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+            h(20),
+
+            // 🔎 Search + Sort row
+            Padding(
+              padding: EdgeInsets.only(left: 15.w, right: 10.w),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: CustomTextInput(
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppColor.greyPurpleColor,
+                        size: 20.sp,
+                      ),
+                      textEditController: controller.textController,
+                      hintTextString: "Type into Search",
+                      borderColor: AppColor.borderColor,
+                      inputType: InputType.defaults,
+                    ),
+                  ),
+                  SizedBox(width: 20.w),
+                  Container(
+                    height: 32.h,
+                    width: 75.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColor.lightGreyColor),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 3.w),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Short By",
+                            style: AppTextStyle.medium12(AppColor.greyColor),
+                          ),
+                          w(3),
+                          const Icon(
+                            Icons.swap_vert,
+                            color: AppColor.greyColor,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            h(20),
+
+            // ✅ Move Button Here (Under Search)
+            Obx(() {
+              return Padding(
+                padding:
+                EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                child: GestureDetector(
+                  onTap: () {
+                    if (controller.selectedIndex.value == 0) {
+                      showAddQuestionDialog(context);
+                    } else if (controller.selectedIndex.value == 1) {
+                      showAddAnswerChoiceDialog(context);
+                    }
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: AppColor.primaryColor,
+                    ),
+                    child: Center(
+                      child: Text(
+                        controller.selectedIndex.value == 0
+                            ? '+ Add Question'
+                            : '+ Add Answer Choice Group',
+                        style: AppTextStyle.semiBold15(AppColor.whiteColor),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+
+            h(20),
+
+            // List
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ActionItemCard(
+                    id: '#ID ${index + 10}',
+                    title: 'If you are 18+ now you can take a loan',
+                    details: [
+                      {
+                        "label": "Answer Type",
+                        "value": index == 0 ? "Date" : "Text"
+                      },
+                      {
+                        "label": "Category",
+                        "value": index == 1 ? "Loan" : "Mortgage"
+                      },
+                      const {
+                        "label": "Modified on",
+                        "value": "30/07/2025"
+                      },
+                    ],
+                    onEdit: () {},
+                    onCopy: () {},
+                    onDelete: () {},
+                  ),
+                );
+              },
+            ),
           ],
-          onLogout: () {},
         ),
-        appBar: const CommonAppbar(),
-      body:const Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-       Text('demo')
-        ],
-      ) ,
+      ),
     );
   }
 }
-
 
 void showAddQuestionDialog(BuildContext context) {
   final controller = Get.find<QuestionBankController>();
