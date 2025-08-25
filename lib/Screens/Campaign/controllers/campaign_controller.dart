@@ -9,22 +9,22 @@ import '../../../utils/app_image.dart';
 class CampaignController extends GetxController with GetSingleTickerProviderStateMixin{
 
   var selectedIndex = 0.obs;
-  var isMandatory = false.obs;
+ // var isMandatory = false.obs;
+  //var isSelected = false.obs;
   TextEditingController textController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
-  TextEditingController surveyTextController = TextEditingController();
-  TextEditingController surveyStartDateController = TextEditingController();
-  TextEditingController surveyEndDateController = TextEditingController();
+  // TextEditingController surveyTextController = TextEditingController();
+  // TextEditingController surveyStartDateController = TextEditingController();
+  // TextEditingController surveyEndDateController = TextEditingController();
 
 
-  final selectList = <String, bool>{
-    'Days': false,
-    'Weeks': false,
-    'Months': false,
-    'Years': false,
-  }.obs;
+  // void toggleSelection() {
+  //   isSelected.value = !isSelected.value;
+  // }
+
+
 
   final categoryList = <String, bool>{
     'Mortgage': false,
@@ -46,20 +46,20 @@ class CampaignController extends GetxController with GetSingleTickerProviderStat
   ];
 
 
-  var inviteReviewer = false.obs;
-  RxInt currentStep = 1.obs;
-  final int totalSteps = 4;
-  void nextStep() {
-    if (currentStep.value < totalSteps) {
-      currentStep.value++;
-    }
-  }
-
-  void previousStep() {
-    if (currentStep.value > 1) {
-      currentStep.value--;
-    }
-  }
+  //var inviteReviewer = false.obs;
+ // RxInt currentStep = 1.obs;
+ //  final int totalSteps = 4;
+ //  void nextStep() {
+ //    if (currentStep.value < totalSteps) {
+ //      currentStep.value++;
+ //    }
+ //  }
+ //
+ //  void previousStep() {
+ //    if (currentStep.value > 1) {
+ //      currentStep.value--;
+ //    }
+ //  }
 
   late TabController tabController;
   var selectedSort = "Sort By".obs;

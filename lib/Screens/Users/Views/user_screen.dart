@@ -40,7 +40,7 @@ class UserScreen extends GetView<Usercontroller> {
                           backgroundColor: controller.selectedIndex.value == 0
                               ? AppColor.rizePurpleColor
                               : Colors.transparent,
-                          side: BorderSide(color: AppColor.blackColor, width: 1),
+                          side: BorderSide(color: AppColor.blackColor, width: 1.w),
                         ),
                         child: Text(
                           'Invited User',
@@ -126,11 +126,9 @@ class UserScreen extends GetView<Usercontroller> {
                 ),
                 h(20),
                 Obx(() {
-                  // Show button only on Invited Users tab
                   if (controller.selectedIndex.value != 0) {
                     return const SizedBox.shrink(); // empty widget
                   }
-
                   return Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(

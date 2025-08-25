@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:survey_app/Screens/Campaign/Views/camaign_screen.dart';
 import 'package:survey_app/Screens/Campaign/Views/create_new_survey_screen.dart';
 import 'package:survey_app/Screens/Campaign/bindings/campaign_binding.dart';
+import 'package:survey_app/Screens/Campaign/bindings/survey_binding.dart';
 import 'package:survey_app/Screens/HomeScreens/bindings/home_binding.dart';
 import 'package:survey_app/Screens/HomeScreens/view/home_page.dart';
 import 'package:survey_app/Screens/QuestionBank/bindings/question_bank_binding.dart';
@@ -55,7 +56,7 @@ class AppPages {
     GetPage(
       name: _Paths.surveyScreen,
       page: () => const CreateNewSurveyScreen(),
-      binding: CampaignBinding(),
+      binding: SurveyBinding(),
     ),
   ];
 }

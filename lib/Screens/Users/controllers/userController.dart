@@ -59,7 +59,6 @@ class Usercontroller extends GetxController{
         ],
       ),
     ];
-
     onboardUsers.value = [
       UserModel(
         name: "Anoop Baloni",
