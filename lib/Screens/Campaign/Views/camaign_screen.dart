@@ -46,7 +46,7 @@ class CampaignScreen extends GetView<CampaignController>{
                           minimumSize: Size(100.w, 30.h),
                           backgroundColor: controller.selectedIndex.value == 0
                               ? AppColor.rizePurpleColor
-                              : Colors.transparent,
+                              : AppColor.transparentColor,
                           side: const BorderSide(color: AppColor.blackColor, width: 1),
                         ),
                         child: Text(
@@ -67,7 +67,7 @@ class CampaignScreen extends GetView<CampaignController>{
                           minimumSize: Size(100.w, 30.h),
                           backgroundColor: controller.selectedIndex.value == 1
                               ? AppColor.rizePurpleColor
-                              : Colors.transparent,
+                              : AppColor.transparentColor,
                           side: BorderSide(color: AppColor.blackColor.withOpacity(0.4), width: 1),
                         ),
                         child: Text(
@@ -171,163 +171,136 @@ class CampaignScreen extends GetView<CampaignController>{
                       child:GestureDetector(
                         onTap: () {
                           showDialog(
-                            context: context,
-                            builder: (context) {
-                              //  TextEditingController choiceController = TextEditingController();
-                              return AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.r),
-                                ),
-                                title: Text("Add Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
-                                content: SizedBox(
-                                  width: MediaQuery.of(context).size.width * 1.w,
-                                  child: Form(
-                                    key: formKey,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        CustomTextInput(
-                                          textEditController: controller.textController,
-                                          hintTextString: 'Enter Campaign Name',
-                                          validator: (value) =>
-                                          value == null || value.isEmpty ? "Campaign Name is required" : null,
-                                        ),
-                                        h(20),
-                                        TextField(
-                                          controller: controller.startDateController,
-                                          readOnly: true,
-                                          decoration: InputDecoration(
-                                            labelText: "Start Date",
-                                            suffixIcon: const Icon(Icons.calendar_today_outlined),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8.r),
-                                            ),
+                              context: context,
+                              builder: (context) {
+                                //  TextEditingController choiceController = TextEditingController();
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  title: Text("Add Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+                                  content: SizedBox(
+                                    width: MediaQuery.of(context).size.width * 1.w,
+                                    child: Form(
+                                      key: formKey,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          CustomTextInput(
+                                            textEditController: controller.textController,
+                                            hintTextString: 'Enter Campaign Name',
+                                            validator: (value) =>
+                                            value == null || value.isEmpty ? "Campaign Name is required" : null,
                                           ),
-                                          onTap: () async {
-                                            DateTime? pickedDate = await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(2000),
-                                              lastDate: DateTime(2100),
-                                            );
-
-                                            if (pickedDate != null) {
-                                              String formattedDate =
-                                                  "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                                              controller.startDateController.text = formattedDate;
-                                            }
-                                          },
-                                        ),
-                                        h(20),
-                                        TextField(
-                                          controller: controller.endDateController,
-                                          readOnly: true,
-                                          decoration: InputDecoration(
-                                            labelText: "End Date",
-                                            suffixIcon: const Icon(Icons.calendar_today_outlined),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8.r),
-                                            ),
-                                          ),
-                                          onTap: () async {
-                                            DateTime? pickedDate = await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(2000),
-                                              lastDate: DateTime(2100),
-                                            );
-
-                                            if (pickedDate != null) {
-                                              String formattedDate =
-                                                  "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                                              controller.endDateController.text = formattedDate;
-                                            }
-                                          },
-                                        ),
-                                        h(20),
-                                        TextField(
-                                          controller: controller.categoryController,
-                                          readOnly: true,
-                                          decoration: InputDecoration(
-                                            labelText: "Select Category",
-                                            suffixIcon: const Icon(Icons.arrow_drop_down),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8.r),
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (_) => AlertDialog(
-                                                title: const Text("Select Categories"),
-                                                content: Obx(() => SingleChildScrollView(
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: controller.categoryList.keys.map((category) {
-                                                      return CheckboxListTile(
-                                                        title: Text(category),
-                                                        value: controller.categoryList[category],
-                                                        onChanged: (val) {
-                                                          controller.categoryList[category] = val ?? false;
-                                                        },
-                                                      );
-                                                    }).toList(),
-                                                  ),
-                                                )),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () => Navigator.pop(context),
-                                                    child: const Text("Cancel"),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      final selected = controller.categoryList.entries
-                                                          .where((e) => e.value)
-                                                          .map((e) => e.key)
-                                                          .toList();
-
-                                                      controller.categoryController.text = selected.join(", ");
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text("OK"),
-                                                  )
-                                                ],
+                                          h(20),
+                                          TextField(
+                                            controller: controller.startDateController,
+                                            readOnly: true,
+                                            decoration: InputDecoration(
+                                              labelText: "Start Date",
+                                              suffixIcon: const Icon(Icons.calendar_today_outlined),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(8.r),
                                               ),
-                                            );
-                                          },
-                                        ),
-                                        h(10),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context); // Close popup
-                                    },
-                                    child: const Text("Cancel"),
-                                  ),
+                                            ),
+                                            onTap: () => controller.pickStartDate(context),
+                                          ),
+                                          h(20),
+                                          TextField(
+                                            controller: controller.endDateController,
+                                            readOnly: true,
+                                            decoration: InputDecoration(
+                                              labelText: "End Date",
+                                              suffixIcon: const Icon(Icons.calendar_today_outlined),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(8.r),
+                                              ),
+                                            ),
+                                            onTap: () => controller.pickEndDate(context),
+                                          ),
+                                          h(20),
+                                          TextField(
+                                            controller: controller.categoryController,
+                                            readOnly: true,
+                                            decoration: InputDecoration(
+                                              labelText: "Select Category",
+                                              suffixIcon: const Icon(Icons.arrow_drop_down),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(8.r),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) => AlertDialog(
+                                                  title: const Text("Select Categories"),
+                                                  content: Obx(() => SingleChildScrollView(
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: controller.categoryList.keys.map((category) {
+                                                        return CheckboxListTile(
+                                                          title: Text(category),
+                                                          value: controller.categoryList[category],
+                                                          onChanged: (val) {
+                                                            controller.categoryList[category] = val ?? false;
+                                                          },
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  )),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: const Text("Cancel"),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        final selected = controller.categoryList.entries
+                                                            .where((e) => e.value)
+                                                            .map((e) => e.key)
+                                                            .toList();
 
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      String newChoice = controller.textController.text.trim();
-                                      if (newChoice.isNotEmpty) {
-                                        print("New Choice Group: $newChoice");
-                                      }
-                                      Navigator.pop(context); // Close popup
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColor.primaryColor
-                                    ),
-                                    child:  Text("Create",
-                                      style: AppTextStyle.semiBold12(AppColor.whiteColor),
+                                                        controller.categoryController.text = selected.join(", ");
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: const Text("OK"),
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          h(10),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ],
-                              );
-                            },
-                          );
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context); // Close popup
+                                      },
+                                      child: const Text("Cancel"),
+                                    ),
+
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (!controller.validateDates()) return;
+                                        String newChoice = controller.textController.text.trim();
+                                        if (newChoice.isNotEmpty) {
+                                          print("New Choice Group: $newChoice");
+                                        }
+                                        Navigator.pop(context); // Close popup
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColor.primaryColor
+                                      ),
+                                      child:  Text("Create",
+                                        style: AppTextStyle.semiBold12(AppColor.whiteColor),
+                                      ),
+                                    ),
+                                  ],
+                                );});
                         },
                         child: Container(
                           margin: EdgeInsets.only(right: 20.w),
@@ -445,8 +418,6 @@ class CampaignScreen extends GetView<CampaignController>{
                                         Text('Total Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
                                         ],
                                       ),
-
-
                                     ],
                                       ),
 
@@ -467,7 +438,6 @@ class CampaignScreen extends GetView<CampaignController>{
                                     ],
                                       ),
 
-
                                     ],
                                   ),
                                   h(20),
@@ -475,7 +445,138 @@ class CampaignScreen extends GetView<CampaignController>{
                                    mainAxisAlignment: MainAxisAlignment.start,
                                    children: [
                                      GestureDetector(
-                                       onTap:(){},
+                                       onTap:(){
+                                         showDialog(
+                                             context: context,
+                                             builder: (context) {
+                                               return AlertDialog(
+                                                 shape: RoundedRectangleBorder(
+                                                   borderRadius: BorderRadius.circular(10.r),
+                                                 ),
+                                                 title: Text("Edit Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+                                                 content: SizedBox(
+                                                   width: MediaQuery.of(context).size.width * 1.w,
+                                                   child: Form(
+                                                     key: formKey,
+                                                     child: Column(
+                                                       mainAxisSize: MainAxisSize.min,
+                                                       children: [
+                                                         CustomTextInput(
+                                                           textEditController: controller.textController,
+                                                           hintTextString: 'Enter Campaign Name',
+                                                           validator: (value) =>
+                                                           value == null || value.isEmpty ? "Campaign Name is required" : null,
+                                                         ),
+                                                         h(20),
+                                                         TextField(
+                                                           controller: controller.startDateController,
+                                                           readOnly: true,
+                                                           decoration: InputDecoration(
+                                                             labelText: "Start Date",
+                                                             suffixIcon: const Icon(Icons.calendar_today_outlined),
+                                                             border: OutlineInputBorder(
+                                                               borderRadius: BorderRadius.circular(8.r),
+                                                             ),
+                                                           ),
+                                                           onTap: () => controller.pickStartDate(context),
+                                                         ),
+                                                         h(20),
+                                                         TextField(
+                                                           controller: controller.endDateController,
+                                                           readOnly: true,
+                                                           decoration: InputDecoration(
+                                                             labelText: "End Date",
+                                                             suffixIcon: const Icon(Icons.calendar_today_outlined),
+                                                             border: OutlineInputBorder(
+                                                               borderRadius: BorderRadius.circular(8.r),
+                                                             ),
+                                                           ),
+                                                           onTap: () => controller.pickEndDate(context),
+                                                         ),
+                                                         h(20),
+                                                         TextField(
+                                                           controller: controller.categoryController,
+                                                           readOnly: true,
+                                                           decoration: InputDecoration(
+                                                             labelText: "Select Category",
+                                                             suffixIcon: const Icon(Icons.arrow_drop_down),
+                                                             border: OutlineInputBorder(
+                                                               borderRadius: BorderRadius.circular(8.r),
+                                                             ),
+                                                           ),
+                                                           onTap: () {
+                                                             showDialog(
+                                                               context: context,
+                                                               builder: (_) => AlertDialog(
+                                                                 title: const Text("Select Categories"),
+                                                                 content: Obx(() => SingleChildScrollView(
+                                                                   child: Column(
+                                                                     mainAxisSize: MainAxisSize.min,
+                                                                     children: controller.categoryList.keys.map((category) {
+                                                                       return CheckboxListTile(
+                                                                         title: Text(category),
+                                                                         value: controller.categoryList[category],
+                                                                         onChanged: (val) {
+                                                                           controller.categoryList[category] = val ?? false;
+                                                                         },
+                                                                       );
+                                                                     }).toList(),
+                                                                   ),
+                                                                 )),
+                                                                 actions: [
+                                                                   TextButton(
+                                                                     onPressed: () => Navigator.pop(context),
+                                                                     child: const Text("Cancel"),
+                                                                   ),
+                                                                   ElevatedButton(
+                                                                     onPressed: () {
+                                                                       final selected = controller.categoryList.entries
+                                                                           .where((e) => e.value)
+                                                                           .map((e) => e.key)
+                                                                           .toList();
+
+                                                                       controller.categoryController.text = selected.join(", ");
+                                                                       Navigator.pop(context);
+                                                                     },
+                                                                     child: const Text("OK"),
+                                                                   )
+                                                                 ],
+                                                               ),
+                                                             );
+                                                           },
+                                                         ),
+                                                         h(10),
+                                                       ],
+                                                     ),
+                                                   ),
+                                                 ),
+                                                 actions: [
+                                                   TextButton(
+                                                     onPressed: () {
+                                                       Navigator.pop(context); // Close popup
+                                                     },
+                                                     child: const Text("Cancel"),
+                                                   ),
+
+                                                   ElevatedButton(
+                                                     onPressed: () {
+                                                       if (!controller.validateDates()) return;
+                                                       String newChoice = controller.textController.text.trim();
+                                                       if (newChoice.isNotEmpty) {
+                                                         print("New Choice Group: $newChoice");
+                                                       }
+                                                       Navigator.pop(context); // Close popup
+                                                     },
+                                                     style: ElevatedButton.styleFrom(
+                                                         backgroundColor: AppColor.primaryColor
+                                                     ),
+                                                     child:  Text("Create",
+                                                       style: AppTextStyle.semiBold12(AppColor.whiteColor),
+                                                     ),
+                                                   ),
+                                                 ],
+                                               );});
+                                       },
                                          child: const Icon(Icons.edit,size: 20)),
                                      w(20),
                                      GestureDetector(
@@ -483,7 +584,39 @@ class CampaignScreen extends GetView<CampaignController>{
                                          child: const Icon(Icons.copy,size: 20)),
                                      w(20),
                                      GestureDetector(
-                                         onTap:(){},
+                                         onTap:(){
+                                           showDialog(context: context,
+                                               builder: (context){
+                                             return AlertDialog(
+                                               shape: RoundedRectangleBorder(
+                                                 borderRadius: BorderRadius.circular(10.r),
+                                               ),
+                                               title: Text("Delete Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+                                               content: Text('''Are you sure , you want to delete this Campaign? This process can't be undone''',
+                                                 style: AppTextStyle.medium14(AppColor.blackColor),
+                                               ),
+                                               actions: [
+                                                 TextButton(
+                                                   onPressed: () {
+                                                     Navigator.pop(context);
+                                                   },
+                                                   child: const Text("Cancel"),
+                                                 ),
+                                                 ElevatedButton(
+                                                   style: ElevatedButton.styleFrom(
+                                                     backgroundColor: AppColor.primaryColor,
+                                                   ),
+                                                   onPressed: () {
+                                                     controller.deleteCampaign();
+                                                     Navigator.pop(context);
+                                                   },
+                                                   child: const Text("Delete"),
+                                                 ),
+                                               ],
+                                             );
+                                               }
+                                           );
+                                         },
                                          child: const Icon(Icons.delete,size: 20)),
                                      Expanded(
                                        child: Row(

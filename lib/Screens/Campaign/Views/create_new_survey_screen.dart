@@ -19,7 +19,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
   @override
   Widget build(BuildContext context) {
     final _scaffoldKey = GlobalKey<ScaffoldState>();
-   //            final formKey = GlobalKey<FormState>();
+    //  final formKey = GlobalKey<FormState>();
     return AppShell(
         child: SingleChildScrollView(
           child: Column(
@@ -64,8 +64,8 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                              return Row(
                                mainAxisAlignment: MainAxisAlignment.center,
                                children: List.generate(controller.totalSteps, (index) {
-                                 bool isActive = controller.currentStep.value == index + 1; // 👈 current step check
-                                 bool isCompleted = controller.currentStep.value > index + 1; // 👈 pichle steps
+                                 bool isActive = controller.currentStep.value == index + 1;
+                                 bool isCompleted = controller.currentStep.value > index + 1;
 
                                  return Row(
                                    children: [
@@ -107,7 +107,6 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                        return Row(
                          mainAxisAlignment: MainAxisAlignment.end,
                          children: [
-                           // Previous button
                            OutlinedButton(
                              onPressed: controller.currentStep.value == 1
                                  ? null
@@ -134,7 +133,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                        } else {
                        controller.nextStep();
                        }
-                               },
+                       },
                              style: OutlinedButton.styleFrom(
                                backgroundColor: AppColor.primaryColor,
                                foregroundColor: AppColor.whiteColor,
@@ -151,13 +150,13 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                      Obx(() {
                        switch (controller.currentStep.value) {
                          case 1:
-                           return FirstScreenWidget(context);
+                           return firstScreenWidget(context);
                          case 2:
-                           return SecondScreenWidget(context);
+                           return secondScreenWidget(context);
                           case 3:
-                            return ThirdScreenWidget(context);
+                            return thirdScreenWidget(context);
                             case 4:
-                            return FourthScreenWidget(context);
+                            return fourthScreenWidget(context);
                          default:
                            return const SizedBox();
                        }
@@ -196,7 +195,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
     );
   }
 
- Widget FirstScreenWidget(BuildContext context){
+ Widget firstScreenWidget(BuildContext context){
     return Column(
       children: [
         TextField(
@@ -256,20 +255,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
-          onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-            );
-
-            if (pickedDate != null) {
-              String formattedDate =
-                  "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-              controller.surveyStartDateController.text = formattedDate;
-            }
-          },
+          onTap: () => controller.pickStartDate(context),
         ),
         h(20),
         TextField(
@@ -295,27 +281,14 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
               borderRadius: BorderRadius.circular(8.r),
             ),
           ),
-          onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-            );
-
-            if (pickedDate != null) {
-              String formattedDate =
-                  "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-              controller.surveyEndDateController.text = formattedDate;
-            }
-          },
+          onTap: () => controller.pickEndDate(context),
         ),
         h(20),
       ],
     );
  }
 
- Widget SecondScreenWidget(BuildContext context){
+ Widget secondScreenWidget(BuildContext context){
     return Column(
       children: [
         Container(
@@ -346,7 +319,6 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                 ),
                 h(15),
 
-                // 👉 Create New Question Button
                 OutlinedButton(
                   onPressed: () {
                     controller.selectedButtonIndex.value = 0; // set selected
@@ -596,7 +568,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
     );
  }
 
- Widget ThirdScreenWidget(BuildContext context){
+ Widget thirdScreenWidget(BuildContext context){
 
     return Column(
       children: [
@@ -725,7 +697,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
 
  }
 
- Widget FourthScreenWidget(BuildContext context) {
+ Widget fourthScreenWidget(BuildContext context) {
     return Column(
       children: [
         // Top tab buttons
@@ -902,13 +874,14 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
           ],
         ),
         h(10),
-        Obx(() {
-          return ListView.builder(
-            itemCount: controller.users.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final user = controller.users[index];
+        ListView.builder(
+          itemCount: controller.users.length,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final user = controller.users[index];
+
+            return Obx(() {
               final expanded = controller.isExpanded.value == index;
 
               return CommonActionCard(
@@ -921,9 +894,9 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                 onEdit: () => print("Edit ${user.name}"),
                 onDelete: () => print("Delete ${user.name}"),
               );
-            },
-          );
-        })
+            });
+          },
+        )
 
       ],
     );
@@ -1081,7 +1054,7 @@ class CommonActionCard extends StatelessWidget {
 
                         ),
                       ),
-                      const SizedBox(height: 8),
+                     h(8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

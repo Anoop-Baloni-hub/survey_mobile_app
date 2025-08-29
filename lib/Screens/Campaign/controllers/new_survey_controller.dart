@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
@@ -20,6 +21,67 @@ class NewSurveyController extends GetxController {
   var inviteReviewer = false.obs;
   var selectedButtonIndex = 0.obs;
 
+
+  DateTime? selectedStartDate;
+  DateTime? selectedEndDate;
+
+  ///Pick Start Date ====
+  Future<void> pickStartDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedStartDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      if (selectedEndDate != null && pickedDate.isAfter(selectedEndDate!)) {
+        Get.snackbar("Error", "Start date cannot be after End date",
+            backgroundColor: Colors.redAccent, colorText: Colors.white);
+        return;
+      }
+      selectedStartDate = pickedDate;
+      surveyStartDateController.text =
+      "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+    }
+  }
+
+  ///Pick End Date ====
+  Future<void> pickEndDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedEndDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      if (selectedStartDate != null && pickedDate.isBefore(selectedStartDate!)) {
+        Get.snackbar("Error", "End date cannot be before Start date",
+            backgroundColor: Colors.redAccent, colorText: Colors.white);
+        return;
+      }
+      selectedEndDate = pickedDate;
+      surveyEndDateController.text =
+      "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+    }
+  }
+
+  /// Final validation before submit====
+  bool validateDates() {
+    if (selectedStartDate == null || selectedEndDate == null) {
+      Get.snackbar("Error", "Please select both start and end dates",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      return false;
+    }
+
+    if (selectedStartDate!.isAfter(selectedEndDate!)) {
+      Get.snackbar("Error", "Start date must be before End date",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      return false;
+    }
+    return true;
+  }
 
   var selectedListIndexes = <int>[].obs;
 

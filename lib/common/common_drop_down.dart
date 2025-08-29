@@ -28,7 +28,7 @@ class CommonDropdownButton<T> extends StatelessWidget {
       items: items,
       onChanged: onChanged,
       decoration: InputDecoration(
-        labelText: hintText, // floating hint on the border
+        labelText: hintText,
         labelStyle: AppTextStyle.regular14(AppColor.greyPurpleColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),

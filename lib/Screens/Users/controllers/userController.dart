@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../../common/common_widget.dart';
+import '../../../utils/app_color.dart';
 
 class Usercontroller extends GetxController{
 
@@ -22,6 +23,12 @@ class Usercontroller extends GetxController{
   var selectedLocation = RxnString();
 
 
+  void deleteCampaign() {
+
+    print("Campaign deleted");
+    Get.snackbar("Deleted", "Campaign has been deleted successfully",
+        backgroundColor: AppColor.greenColor, colorText: AppColor.whiteColor);
+  }
 
 
   TextEditingController textController = TextEditingController();

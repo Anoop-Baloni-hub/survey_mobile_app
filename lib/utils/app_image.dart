@@ -2,7 +2,7 @@ class AppImage {
   const AppImage._();
 
   //icons
-  static const String appLogo = 'assets/images/survey.png';
+  static const String appLogo = 'assets/images/rize_app.png';
   static const String arrowIcon = 'assets/icons/arrow.png';
   static const String calculatorIcon = 'assets/icons/calculator.png';
   static const String calendarIcon = 'assets/icons/calendar.png';
@@ -71,14 +71,16 @@ class AppImage {
   static const String backwardIcon = 'assets/icons/left.png';
   static const String forwardIcon = 'assets/icons/right.png';
   static const String vector = 'assets/icons/vector.png';
+  static const String vector1 = 'assets/icons/vector1.png';
   static const String group = 'assets/icons/group.png';
+  static const String group1 = 'assets/icons/group1.png';
   static const String charmCircle = 'assets/icons/charmCircleTick.png';
   static const String check = 'assets/icons/check.png';
+  static const String check1 = 'assets/icons/check1.png';
   static const String profileCircle = 'assets/icons/iprofile-circle-thin.png';
+  static const String profileCircle1 = 'assets/icons/profileCircle.png';
   static const String arrow1 = 'assets/icons/arrow1.png';
   static const String mingcute = 'assets/icons/mingcute.png';
-
-
 
   //images
   static const String bgImage = 'assets/images/bg.png';

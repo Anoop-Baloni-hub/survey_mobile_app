@@ -2,14 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get/get.dart';
 
+import '../../../utils/app_color.dart';
+
 class QuestionBankController extends GetxController{
 
   var selectedIndex = 0.obs;
   var selectedOption = ''.obs;
   final selectedCategoriesText = ''.obs;
   TextEditingController textController = TextEditingController();
-  TextEditingController choice1Controller = TextEditingController();
-  TextEditingController choice2Controller = TextEditingController();
+  TextEditingController minController = TextEditingController();
+  TextEditingController maxController = TextEditingController();
+  TextEditingController optionsController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
 
   final optionsList =<String> [
@@ -34,4 +37,12 @@ class QuestionBankController extends GetxController{
     'Real State': false,
   }.obs;
 
+  var answerOptionsControllers = <TextEditingController>[].obs;
+
+  void deleteCampaign() {
+
+    print("Campaign deleted");
+    Get.snackbar("Deleted", "Campaign has been deleted successfully",
+        backgroundColor: AppColor.greenColor, colorText: AppColor.whiteColor);
+  }
 }

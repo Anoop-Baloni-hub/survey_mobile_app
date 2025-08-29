@@ -11,6 +11,8 @@ class HomePageController extends GetxController {
 
   var selectedRoute = Routes.home.obs;
 
+  int selectedIndex = 0;
+
   void setSelectedRoute(String route) {
     selectedRoute.value = route;
   }

@@ -39,7 +39,7 @@ class UserScreen extends GetView<Usercontroller> {
                           minimumSize: Size(100.w, 30.h),
                           backgroundColor: controller.selectedIndex.value == 0
                               ? AppColor.rizePurpleColor
-                              : Colors.transparent,
+                              :AppColor.transparentColor,
                           side: BorderSide(color: AppColor.blackColor, width: 1.w),
                         ),
                         child: Text(
@@ -127,7 +127,7 @@ class UserScreen extends GetView<Usercontroller> {
                 h(20),
                 Obx(() {
                   if (controller.selectedIndex.value != 0) {
-                    return const SizedBox.shrink(); // empty widget
+                    return const SizedBox.shrink();
                   }
                   return Align(
                     alignment: Alignment.centerLeft,
@@ -345,13 +345,212 @@ class UserScreen extends GetView<Usercontroller> {
                           print("Refresh tapped for ${user.name}");
                         } : null,
                         onEdit: !isRefreshScreen ? () {
-                          print("Edit tapped for ${user.name}");
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                title: Text("Edit User",style: AppTextStyle.bold14(AppColor.blackColor),),
+                                content: SizedBox(
+                                  width: MediaQuery.of(context).size.width * 1.w,
+                                  child: Form(
+                                    key: formKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        CustomTextInput(
+                                          textEditController: controller.firstNameController,
+                                          labelText: 'First Name',
+                                          validator: (value) =>
+                                          value == null || value.isEmpty ? "First Name required" : null,
+                                        ),
+                                        h(10),
+                                        CustomTextInput(
+                                          textEditController: controller.lastNameController,
+                                          labelText: 'Last Name',
+                                          validator: (value) =>
+                                          value == null || value.isEmpty ? "Last Name required" : null,
+                                        ),
+                                        h(10),
+                                        CustomTextInput(
+                                          textEditController: controller.emailController,
+                                          hintTextString: 'Email Id',
+                                          validator: (value) =>
+                                          value == null || value.isEmpty ? "Email Id is required" : null,
+                                        ),
+                                        h(20),
+                                        CustomTextInput(
+                                          textEditController: controller.phoneController,
+                                          hintTextString: 'Contact Number',
+                                          inputType: InputType.number,
+                                          validator: (value) =>
+                                          value == null || value.isEmpty ? "Mobile Number is required" : null,
+                                        ),
+                                        h(20),
+                                        Obx(() {
+                                          return CommonDropdownButton<String>(
+                                            hintText: "Select Role",
+                                            value: controller.roleList.entries
+                                                .any((e) => e.value)
+                                                ? controller.roleList.entries.firstWhere((e) => e.value).key : null,
+                                            items: controller.roleList.keys.map((role) {
+                                              return DropdownMenuItem<String>(
+                                                value: role,
+                                                child: Text(role),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) {
+                                              if (value != null) {
+                                                controller.roleList.updateAll((key, _) => false);
+                                                controller.roleList[value] = true;
+                                                print("Selected role: $value");
+                                              }
+                                            },
+                                          );
+                                        }),
+                                        h(20),
+                                        TextField(
+                                          controller: controller.categoryController,
+                                          readOnly: true,
+                                          decoration: InputDecoration(
+                                            labelText: "Select Category",
+                                            suffixIcon: const Icon(Icons.arrow_drop_down),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(8.r),
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) => AlertDialog(
+                                                title: const Text("Select Categories"),
+                                                content: Obx(() => SingleChildScrollView(
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: controller.categoryList.keys.map((category) {
+                                                      return CheckboxListTile(
+                                                        title: Text(category),
+                                                        value: controller.categoryList[category],
+                                                        onChanged: (val) {
+                                                          controller.categoryList[category] = val ?? false;
+                                                        },
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                )),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context),
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      final selected = controller.categoryList.entries
+                                                          .where((e) => e.value)
+                                                          .map((e) => e.key)
+                                                          .toList();
+
+                                                      controller.categoryController.text = selected.join(", ");
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("OK"),
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        h(20),
+                                        Obx(() {
+                                          return CommonDropdownButton<String>(
+                                            hintText: "Location",
+                                            value: controller.selectedLocation.value,
+                                            items: controller.locationList.map((loc) {
+                                              return DropdownMenuItem<String>(
+                                                value: loc,
+                                                child: Text(loc),
+                                              );
+                                            }).toList(),
+                                            onChanged: (value) {
+                                              controller.selectedLocation.value = value;
+                                            },
+                                          );
+                                        }),
+                                        h(20),
+                                        CustomTextInput(
+                                          textEditController: controller.phoneController,
+                                          hintTextString: 'Default Survey',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close popup
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (formKey.currentState!.validate()) {
+
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(color:AppColor.blackColor.withOpacity(0.4), width: 1.w),
+                                        backgroundColor: AppColor.primaryColor
+                                    ),
+                                    child:  Text("Edit",
+                                      style: AppTextStyle.semiBold12(AppColor.whiteColor),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         } : null,
+
                         onCopy: !isRefreshScreen ? () {
                           print("Copy tapped for ${user.name}");
                         } : null,
                         onDelete: !isRefreshScreen ? () {
-                          print("Delete tapped for ${user.name}");
+                            showDialog(context: context,
+                                builder: (context){
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                    ),
+                                    title: Text("Delete Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+                                    content: Text('''Are you sure , you want to delete this Campaign? This process can't be undone''',
+                                      style: AppTextStyle.medium14(AppColor.blackColor),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Cancel"),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColor.primaryColor,
+                                        ),
+                                        onPressed: () {
+                                          controller.deleteCampaign();
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Delete"),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            );
+
                         } : null,
                       );
                     },
@@ -362,4 +561,5 @@ class UserScreen extends GetView<Usercontroller> {
         )
     );
   }
+
 }

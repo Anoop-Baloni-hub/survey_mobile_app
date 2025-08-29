@@ -24,7 +24,7 @@ class LoginPageView extends GetView<LoginPageController> {
               children: [
                 SizedBox(
                   height: 47.h,width: 53.w,
-                    child: Image.asset('assets/images/rize_app.png')),
+                    child: Image.asset(AppImage.appLogo)),
                 h(10),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),

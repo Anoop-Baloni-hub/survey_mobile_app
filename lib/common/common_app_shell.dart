@@ -20,14 +20,11 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
-  // Yaha Get.find() use karna hai (kyunki lazyPut bindings me hai)
   final HomePageController controller = Get.find<HomePageController>();
 
   @override
   void initState() {
     super.initState();
-    // Agar koi selectedRoute nahi hai to default Home set kar do
     if (controller.selectedRoute.value.isEmpty) {
       controller.setSelectedRoute(Routes.home);
     }
@@ -47,13 +44,13 @@ class _AppShellState extends State<AppShell> {
             height: 50,
             child: Image.asset(AppImage.appLogo, fit: BoxFit.contain),
           ),
-          items: _drawerItems(),
+          items: drawerItems(),
           onItemTap: (route) {
             controller.setSelectedRoute(route);
-            Navigator.of(context).pop(); // Drawer close
+            Navigator.of(context).pop();
 
             if (Get.currentRoute != route) {
-              Get.offNamed(route); // navigate
+              Get.offNamed(route);
             }
           },
           onLogout: () {},
@@ -79,7 +76,7 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
-  List<DrawerItem> _drawerItems() => [
+  List<DrawerItem> drawerItems() => [
     DrawerItem(
       label: 'Dashboard',
       leading: Image.asset(AppImage.vector),

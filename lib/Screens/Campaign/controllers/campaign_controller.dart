@@ -15,16 +15,75 @@ class CampaignController extends GetxController with GetSingleTickerProviderStat
   TextEditingController categoryController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
-  // TextEditingController surveyTextController = TextEditingController();
-  // TextEditingController surveyStartDateController = TextEditingController();
-  // TextEditingController surveyEndDateController = TextEditingController();
 
 
-  // void toggleSelection() {
-  //   isSelected.value = !isSelected.value;
-  // }
+  DateTime? selectedStartDate;
+  DateTime? selectedEndDate;
 
+///Pick Start Date ====
+  Future<void> pickStartDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedStartDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
+    if (pickedDate != null) {
+      if (selectedEndDate != null && pickedDate.isAfter(selectedEndDate!)) {
+        Get.snackbar("Error", "Start date cannot be after End date",
+            backgroundColor: Colors.redAccent, colorText: Colors.white);
+        return;
+      }
+      selectedStartDate = pickedDate;
+      startDateController.text =
+      "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+    }
+  }
+
+///Pick End Date ====
+  Future<void> pickEndDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedEndDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      if (selectedStartDate != null && pickedDate.isBefore(selectedStartDate!)) {
+        Get.snackbar("Error", "End date cannot be before Start date",
+            backgroundColor: Colors.redAccent, colorText: Colors.white);
+        return;
+      }
+      selectedEndDate = pickedDate;
+      endDateController.text =
+      "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+    }
+  }
+
+/// Final validation before submit====
+  bool validateDates() {
+    if (selectedStartDate == null || selectedEndDate == null) {
+      Get.snackbar("Error", "Please select both start and end dates",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      return false;
+    }
+
+    if (selectedStartDate!.isAfter(selectedEndDate!)) {
+      Get.snackbar("Error", "Start date must be before End date",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      return false;
+    }
+    return true;
+}
+
+  void deleteCampaign() {
+
+    print("Campaign deleted");
+    Get.snackbar("Deleted", "Campaign has been deleted successfully",
+        backgroundColor: AppColor.greenColor, colorText: AppColor.whiteColor);
+  }
 
   final categoryList = <String, bool>{
     'Mortgage': false,
@@ -45,21 +104,6 @@ class CampaignController extends GetxController with GetSingleTickerProviderStat
     AppImage.frame4,
   ];
 
-
-  //var inviteReviewer = false.obs;
- // RxInt currentStep = 1.obs;
- //  final int totalSteps = 4;
- //  void nextStep() {
- //    if (currentStep.value < totalSteps) {
- //      currentStep.value++;
- //    }
- //  }
- //
- //  void previousStep() {
- //    if (currentStep.value > 1) {
- //      currentStep.value--;
- //    }
- //  }
 
   late TabController tabController;
   var selectedSort = "Sort By".obs;

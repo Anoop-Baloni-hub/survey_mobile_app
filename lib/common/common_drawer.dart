@@ -46,8 +46,8 @@ class CommonDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const pill = AppColor.secondaryColor;
     return Drawer(
+      backgroundColor: AppColor.offWhite,
       width: width,
       child: SafeArea(
         bottom: false,
@@ -69,7 +69,7 @@ class CommonDrawer extends StatelessWidget {
 
                   return Obx(() {
                     final selected = controller.selectedRoute.value == e.route;
-                    final bg = selected ? AppColor.secondaryColor : AppColor.transparentColor;
+                    final bg = selected ? AppColor.rizePurpleColor : AppColor.transparentColor;
                     final fg = selected ? AppColor.whiteColor : AppColor.blackColor;
 
                     return Padding(
@@ -79,9 +79,11 @@ class CommonDrawer extends StatelessWidget {
                         onTap: () {
                           controller.setSelectedRoute(e.route!);
                           Navigator.of(context).pop();
-                          if (Get.currentRoute != e.route) {
-                            Get.offNamed(e.route!);
-                          }
+                          Future.microtask(() {
+                            if (Get.currentRoute != e.route) {
+                              Get.offNamed(e.route!);
+                            }
+                          });
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),

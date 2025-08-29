@@ -917,9 +917,15 @@ class ActionItemCardState extends State<ActionItemCard> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Card(
-        color: AppColor.cardColor.withOpacity(0.8),
+        color: AppColor.offWhite,
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r),
+        side:  BorderSide(
+          color: AppColor.lightGreyColor,
+          width: 1.w,
+        )
+        ),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -931,17 +937,20 @@ class ActionItemCardState extends State<ActionItemCard> {
                   if (widget.gmail != null) Text(widget.gmail!),
                   if (widget.id != null && widget.title != null)
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           widget.id!,
-                          style: AppTextStyle.semiBold10(AppColor.blueColor),
+                          style: AppTextStyle.semiBold13(AppColor.blueColor),
                         ),
-                        const SizedBox(width: 8),
+                       w(8),
                         Expanded(
                           child: Text(
                             widget.title!,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyle.semiBold11(AppColor.greyColor),
+                          //  maxLines: 2,
+                           // overflow: TextOverflow.visible,
+                            softWrap: true,
+                            style: AppTextStyle.semiBold13(AppColor.greyColor),
                           ),
                         ),
                       ],

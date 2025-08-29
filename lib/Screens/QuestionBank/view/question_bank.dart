@@ -32,21 +32,19 @@ class QuestionBank extends GetView<QuestionBankController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             divider(),
-            // Tab Buttons
             Obx(() {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      controller.selectedIndex.value = 0; // Question
+                      controller.selectedIndex.value = 0;
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: controller.selectedIndex.value == 0
                           ? AppColor.rizePurpleColor
-                          : Colors.transparent,
-                      side: BorderSide(
-                          color: AppColor.blackColor.withOpacity(0.4), width: 1),
+                          :AppColor.whiteColor,
+                      side: BorderSide(color: AppColor.blackColor, width: 1.w),
                     ),
                     child: Text(
                       "List of Question",
@@ -60,12 +58,12 @@ class QuestionBank extends GetView<QuestionBankController> {
                   SizedBox(width: 10.w),
                   ElevatedButton(
                     onPressed: () {
-                      controller.selectedIndex.value = 1; // Answer Choice
+                      controller.selectedIndex.value = 1;
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: controller.selectedIndex.value == 1
                           ? AppColor.rizePurpleColor
-                          : Colors.transparent,
+                          : AppColor.whiteColor,
                       side: BorderSide(
                           color: AppColor.blackColor.withOpacity(0.4), width: 1),
                     ),
@@ -82,7 +80,6 @@ class QuestionBank extends GetView<QuestionBankController> {
               );
             }),
             h(20),
-
             Padding(
               padding: EdgeInsets.only(left: 15.w, right: 10.w),
               child: Row(
@@ -140,7 +137,7 @@ class QuestionBank extends GetView<QuestionBankController> {
                 child: GestureDetector(
                   onTap: () {
                     if (controller.selectedIndex.value == 0) {
-                      showAddQuestionDialog(context);
+                      showAddQuestionDialog(context, isEdit: false);
                     } else if (controller.selectedIndex.value == 1) {
                       showAddAnswerChoiceDialog(context);
                     }
@@ -164,17 +161,15 @@ class QuestionBank extends GetView<QuestionBankController> {
                 ),
               );
             }),
-
             h(20),
 
-            // List
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 3,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding:  EdgeInsets.only(bottom: 12.h),
                   child: ActionItemCard(
                     id: '#ID ${index + 10}',
                     title: 'If you are 18+ now you can take a loan',
@@ -192,9 +187,43 @@ class QuestionBank extends GetView<QuestionBankController> {
                         "value": "30/07/2025"
                       },
                     ],
-                    onEdit: () {},
+                    onEdit: () {
+                      showAddQuestionDialog(context);
+                    },
                     onCopy: () {},
-                    onDelete: () {},
+                    onDelete: () {
+                            showDialog(context: context,
+                                builder: (context){
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                    ),
+                                    title: Text("Delete Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+                                    content: Text('''Are you sure , you want to delete this Campaign? This process can't be undone''',
+                                      style: AppTextStyle.medium14(AppColor.blackColor),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Cancel"),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColor.primaryColor,
+                                        ),
+                                        onPressed: () {
+                                          controller.deleteCampaign();
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Delete"),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            );
+                    },
                   ),
                 );
               },
@@ -206,7 +235,7 @@ class QuestionBank extends GetView<QuestionBankController> {
   }
 }
 
-void showAddQuestionDialog(BuildContext context) {
+void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
   final controller = Get.find<QuestionBankController>();
   showDialog(
     context: context,
@@ -216,7 +245,7 @@ void showAddQuestionDialog(BuildContext context) {
           borderRadius: BorderRadius.circular(10.r),
         ),
         title: Text(
-          "Add Question",
+          isEdit ? "Edit Question" : "Add Question",
           style: AppTextStyle.bold14(AppColor.blackColor),
         ),
         content: SizedBox(
@@ -230,7 +259,7 @@ void showAddQuestionDialog(BuildContext context) {
               ),
               h(20),
               Obx(() => CommonDropdownButton(
-                hintText: 'Select Options',
+                hintText: 'Select Answer Type',
                 items: controller.optionsList
                     .map((option) => DropdownMenuItem<String>(
                   value: option,
@@ -243,15 +272,77 @@ void showAddQuestionDialog(BuildContext context) {
                 },
               )),
               h(20),
-              CustomTextInput(
-                textEditController: controller.choice1Controller,
-                labelText: 'Choice 1',
+              TextField(
+                controller: controller.categoryController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Select Category",
+                  suffixIcon: const Icon(Icons.arrow_drop_down),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Select Categories"),
+                      content: Obx(() => SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: controller.categoryList.keys.map((category) {
+                            return CheckboxListTile(
+                              title: Text(category),
+                              value: controller.categoryList[category],
+                              onChanged: (val) {
+                                controller.categoryList[category] = val ?? false;
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      )),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Cancel"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            final selected = controller.categoryList.entries
+                                .where((e) => e.value)
+                                .map((e) => e.key)
+                                .toList();
+
+                            controller.categoryController.text = selected.join(", ");
+                            Navigator.pop(context);
+                          },
+                          child: const Text("OK"),
+                        )
+                      ],
+                    ),
+                  );
+                },
               ),
               h(10),
-              CustomTextInput(
-                textEditController: controller.choice2Controller,
-                labelText: 'Choice 2',
-              ),
+              if (isEdit)
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextInput(
+                        textEditController: controller.minController,
+                       // keyboardType: TextInputType.number,
+                        hintTextString: 'Min Character',
+                      ),
+                    ),
+                    w(6),
+                    Expanded(
+                      child: CustomTextInput(
+                        textEditController: controller.maxController,
+                        hintTextString: 'Max Character',
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -267,7 +358,7 @@ void showAddQuestionDialog(BuildContext context) {
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColor.primaryColor),
             child: Text(
-              "Submit",
+              isEdit ? "Update" : "Submit",
               style: AppTextStyle.semiBold12(AppColor.whiteColor),
             ),
           ),
@@ -279,6 +370,7 @@ void showAddQuestionDialog(BuildContext context) {
 
 void showAddAnswerChoiceDialog(BuildContext context) {
   final controller = Get.find<QuestionBankController>();
+  controller.answerOptionsControllers.clear();
   showDialog(
     context: context,
     builder: (context) {
@@ -292,24 +384,125 @@ void showAddAnswerChoiceDialog(BuildContext context) {
         ),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 1.w,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomTextInput(
-                textEditController: controller.textController,
-                hintTextString: 'Enter Group Name',
-              ),
-              h(20),
-              CustomTextInput(
-                textEditController: controller.choice1Controller,
-                labelText: 'Choice 1',
-              ),
-              h(10),
-              CustomTextInput(
-                textEditController: controller.choice2Controller,
-                labelText: 'Choice 2',
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomTextInput(
+                  textEditController: controller.textController,
+                  hintTextString: 'Enter Answer Choice Group Name',
+                ),
+                h(20),
+                TextField(
+                  controller: controller.categoryController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: "Select Category",
+                    suffixIcon: const Icon(Icons.arrow_drop_down),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text("Select Categories"),
+                        content: Obx(() => SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: controller.categoryList.keys.map((category) {
+                              return CheckboxListTile(
+                                title: Text(category),
+                                value: controller.categoryList[category],
+                                onChanged: (val) {
+                                  controller.categoryList[category] = val ?? false;
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        )),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Cancel"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              final selected = controller.categoryList.entries
+                                  .where((e) => e.value)
+                                  .map((e) => e.key)
+                                  .toList();
+            
+                              controller.categoryController.text = selected.join(", ");
+                              Navigator.pop(context);
+                            },
+                            child: const Text("OK"),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                h(20),
+                Obx(() {
+                  final optionCount = controller.answerOptionsControllers.length;
+            
+                  if (optionCount <= 3) {
+                    return Column(
+                      children: controller.answerOptionsControllers
+                          .asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final textController = entry.value;
+            
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 8.h),
+                          child: TextField(
+                            controller: textController,
+                            decoration: InputDecoration(
+                              hintText: 'Option ${index + 1}',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  } else {
+                    return SizedBox(
+                      height: 250.h,
+                      child: ListView.builder(
+                        itemCount: optionCount,
+                        itemBuilder: (context, index) {
+                          final textController = controller.answerOptionsControllers[index];
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 8.h),
+                            child: TextField(
+                              controller: textController,
+                              decoration: InputDecoration(
+                                hintText: 'Option ${index + 1}',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                }),
+                GestureDetector(
+                  onTap: (){
+                    controller.answerOptionsControllers.add(TextEditingController());
+                  },
+                  child: Text('+ Add New Option',
+                  style: AppTextStyle.semiBold12(AppColor.primaryColor)),
+                )
+              ],
+            ),
           ),
         ),
         actions: [
