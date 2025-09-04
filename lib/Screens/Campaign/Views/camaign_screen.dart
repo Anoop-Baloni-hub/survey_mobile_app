@@ -25,7 +25,7 @@ class CampaignScreen extends GetView<CampaignController>{
 
   @override
   Widget build(BuildContext context) {
-    final _scaffoldKey = GlobalKey<ScaffoldState>();
+   // final _scaffoldKey = GlobalKey<ScaffoldState>();
     final formKey = GlobalKey<FormState>();
     return AppShell(
         child: SingleChildScrollView(

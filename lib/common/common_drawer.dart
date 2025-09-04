@@ -112,18 +112,46 @@ class CommonDrawer extends StatelessWidget {
 
             if (onLogout != null)
               Padding(
-                padding:  EdgeInsets.symmetric(vertical: 20.h,horizontal: 30.w),
+                padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 30.w),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
-                    Navigator.of(context).maybePop();
-                    onLogout!.call();
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Confirm Logout'),
+                        content: const Text('Are you sure you want to log out?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: AppColor.primaryColor,
+                              padding:  EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8), // optional rounded corners
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              onLogout!.call();
+                            }, child: Text('Log Out',
+                            style: AppTextStyle.semiBold12(AppColor.whiteColor),),
+
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   child: Row(
                     children: [
                       const Icon(Icons.logout_outlined, color: Colors.black54),
-                      w(12),
-                       Text('Logout', style: TextStyle(fontSize: 16.sp)),
+                      SizedBox(width: 12.w),
+                      Text('Logout', style: TextStyle(fontSize: 16.sp)),
                     ],
                   ),
                 ),

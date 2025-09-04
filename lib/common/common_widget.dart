@@ -974,7 +974,6 @@ class ActionItemCardState extends State<ActionItemCard> {
                 padding: EdgeInsets.only(left: 12.w, bottom: 8.h),
                 child: Row(children: actionButtons()),
               ),
-            // Expanded details + actions
             if (isExpanded && widget.details != null) ...[
               const Divider(),
               Padding(

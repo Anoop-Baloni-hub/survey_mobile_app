@@ -18,8 +18,8 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
 
   @override
   Widget build(BuildContext context) {
-    final _scaffoldKey = GlobalKey<ScaffoldState>();
-    //  final formKey = GlobalKey<FormState>();
+    // final _scaffoldKey = GlobalKey<ScaffoldState>();
+    //   final formKey = GlobalKey<FormState>();
     return AppShell(
         child: SingleChildScrollView(
           child: Column(

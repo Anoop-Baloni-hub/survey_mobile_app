@@ -1,13 +1,18 @@
+import 'api_services.dart';
+
 class ApiUrl {
   const ApiUrl._();
 
-  static String domain = 'https://example.com/';
-  static String imageBaseUrl = 'https://example.com/';
+  static final DioClient  dioClient = DioClient();
+
+  static String domain = 'https://surveyapp-backend-staging.azurewebsites.net/';
   static String midUrl = 'api/';
 
   static String get baseUrl => domain + midUrl;
 
   static createAPIUrl(String endPoint) => baseUrl + endPoint;
 
-  static String get create => createAPIUrl('example/example');
+  static String get login => createAPIUrl('account/login');
+  static String get answerChoiceList => createAPIUrl('answer-choice-group');
+  static String get questionList => createAPIUrl('question');
 }

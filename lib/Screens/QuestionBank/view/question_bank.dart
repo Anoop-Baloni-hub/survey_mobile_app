@@ -23,213 +23,226 @@ class QuestionBank extends GetView<QuestionBankController> {
 
   @override
   Widget build(BuildContext context) {
-    final _scaffoldKey = GlobalKey<ScaffoldState>();
+     final _scaffoldKey = GlobalKey<ScaffoldState>();
 
     return AppShell(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            divider(),
-            Obx(() {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      controller.selectedIndex.value = 0;
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: controller.selectedIndex.value == 0
-                          ? AppColor.rizePurpleColor
-                          :AppColor.whiteColor,
-                      side: BorderSide(color: AppColor.blackColor, width: 1.w),
-                    ),
-                    child: Text(
-                      "List of Question",
-                      style: AppTextStyle.semiBold13(
-                        controller.selectedIndex.value == 0
-                            ? AppColor.whiteColor
-                            : AppColor.blackColor.withOpacity(0.4),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  ElevatedButton(
-                    onPressed: () {
-                      controller.selectedIndex.value = 1;
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: controller.selectedIndex.value == 1
-                          ? AppColor.rizePurpleColor
-                          : AppColor.whiteColor,
-                      side: BorderSide(
-                          color: AppColor.blackColor.withOpacity(0.4), width: 1),
-                    ),
-                    child: Text(
-                      "Answer Choice Groups",
-                      style: AppTextStyle.semiBold13(
-                        controller.selectedIndex.value == 1
-                            ? AppColor.whiteColor
-                            : AppColor.blackColor.withOpacity(0.4),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }),
-            h(20),
-            Padding(
-              padding: EdgeInsets.only(left: 15.w, right: 10.w),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: CustomTextInput(
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: AppColor.greyPurpleColor,
-                        size: 20.sp,
-                      ),
-                      textEditController: controller.textController,
-                      hintTextString: "Type into Search",
-                      borderColor: AppColor.borderColor,
-                      inputType: InputType.defaults,
-                    ),
-                  ),
-                  SizedBox(width: 20.w),
-                  Container(
-                    height: 32.h,
-                    width: 75.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColor.lightGreyColor),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 3.w),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Short By",
-                            style: AppTextStyle.medium12(AppColor.greyColor),
-                          ),
-                          w(3),
-                          const Icon(
-                            Icons.swap_vert,
-                            color: AppColor.greyColor,
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            h(20),
-
-            Obx(() {
-              return Padding(
-                padding:
-                EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                child: GestureDetector(
-                  onTap: () {
-                    if (controller.selectedIndex.value == 0) {
-                      showAddQuestionDialog(context, isEdit: false);
-                    } else if (controller.selectedIndex.value == 1) {
-                      showAddAnswerChoiceDialog(context);
-                    }
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          divider(),
+          Obx(() {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    controller.selectedIndex.value = 0;
+                    controller.fetchQuestionGroups();
                   },
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.06,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColor.primaryColor,
-                    ),
-                    child: Center(
-                      child: Text(
-                        controller.selectedIndex.value == 0
-                            ? '+ Add Question'
-                            : '+ Add Answer Choice Group',
-                        style: AppTextStyle.semiBold15(AppColor.whiteColor),
-                      ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: controller.selectedIndex.value == 0
+                        ? AppColor.rizePurpleColor
+                        : AppColor.whiteColor,
+                    side: BorderSide(color: AppColor.blackColor, width: 1.w),
+                  ),
+                  child: Text(
+                    "List of Question",
+                    style: AppTextStyle.semiBold13(
+                      controller.selectedIndex.value == 0
+                          ? AppColor.whiteColor
+                          : AppColor.blackColor.withOpacity(0.4),
                     ),
                   ),
                 ),
-              );
-            }),
-            h(20),
-
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding:  EdgeInsets.only(bottom: 12.h),
-                  child: ActionItemCard(
-                    id: '#ID ${index + 10}',
-                    title: 'If you are 18+ now you can take a loan',
-                    details: [
-                      {
-                        "label": "Answer Type",
-                        "value": index == 0 ? "Date" : "Text"
-                      },
-                      {
-                        "label": "Category",
-                        "value": index == 1 ? "Loan" : "Mortgage"
-                      },
-                      const {
-                        "label": "Modified on",
-                        "value": "30/07/2025"
-                      },
-                    ],
-                    onEdit: () {
-                      showAddQuestionDialog(context);
-                    },
-                    onCopy: () {},
-                    onDelete: () {
-                            showDialog(context: context,
-                                builder: (context){
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.r),
-                                    ),
-                                    title: Text("Delete Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
-                                    content: Text('''Are you sure , you want to delete this Campaign? This process can't be undone''',
-                                      style: AppTextStyle.medium14(AppColor.blackColor),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("Cancel"),
-                                      ),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColor.primaryColor,
-                                        ),
-                                        onPressed: () {
-                                          controller.deleteCampaign();
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("Delete"),
-                                      ),
-                                    ],
-                                  );
-                                }
-                            );
-                    },
+                w(10),
+                ElevatedButton(
+                  onPressed: () {
+                    controller.selectedIndex.value = 1;
+                    controller.fetchAnswerGroups();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: controller.selectedIndex.value == 1
+                        ? AppColor.rizePurpleColor
+                        : AppColor.whiteColor,
+                    side: BorderSide(
+                        color: AppColor.blackColor.withOpacity(0.4), width: 1),
                   ),
-                );
-              },
+                  child: Text(
+                    "Answer Choice Groups",
+                    style: AppTextStyle.semiBold13(
+                      controller.selectedIndex.value == 1
+                          ? AppColor.whiteColor
+                          : AppColor.blackColor.withOpacity(0.4),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+          h(20),
+          Padding(
+            padding: EdgeInsets.only(left: 15.w, right: 10.w),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: CustomTextInput(
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: AppColor.greyPurpleColor,
+                      size: 20.sp,
+                    ),
+                    textEditController: controller.textController,
+                    hintTextString: "Type into Search",
+                    borderColor: AppColor.borderColor,
+                    inputType: InputType.defaults,
+                  ),
+                ),
+                SizedBox(width: 20.w),
+                Container(
+                  height: 32.h,
+                  width: 75.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColor.lightGreyColor),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Short By",
+                          style: AppTextStyle.medium12(AppColor.greyColor),
+                        ),
+                        w(3),
+                        const Icon(
+                          Icons.swap_vert,
+                          color: AppColor.greyColor,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          h(20),
+          Obx(() {
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              child: GestureDetector(
+                onTap: () {
+                  if (controller.selectedIndex.value == 0) {
+                    showAddQuestionDialog(context, isEdit: false);
+                  } else if (controller.selectedIndex.value == 1) {
+                    showAddAnswerChoiceDialog(context);
+                  }
+                },
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.06,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    color: AppColor.primaryColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      controller.selectedIndex.value == 0
+                          ? '+ Add Question'
+                          : '+ Add Answer Choice Group',
+                      style: AppTextStyle.semiBold15(AppColor.whiteColor),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+          h(20),
+
+          Expanded(
+            child: Obx(() {
+              if (controller.selectedIndex.value == 0) {
+                return Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (controller.questionList.isEmpty) {
+                    return Center(child: Text("No questions found"));
+                  }
+
+                  return ListView.builder(
+                    itemCount: controller.questionList.length,
+                    itemBuilder: (context, index) {
+                      final item = controller.questionList[index];
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: ActionItemCard(
+                          id: '#ID ${item.questionId}',
+                          title: item.questionText ?? '',
+                          details: [
+                            {
+                              "label": "Answer Type",
+                              "value": item.answerType ?? "Text",
+                            },
+                            {
+                              "label": "Category",
+                              "value": item.categories ?? "",
+                            },
+                            {
+                              "label": "Modified on",
+                              "value": item.modifiedOn ?? "",
+                            },
+                          ],
+                          onEdit: () => showAddQuestionDialog(context),
+                          onCopy: () {},
+                          onDelete: () => showDeleteDialog(context),
+                        ),
+                      );
+                    },
+                  );
+                });
+              }
+              else {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (controller.errorMessage.value.isNotEmpty) {
+                  return Center(child: Text(controller.errorMessage.value));
+                } else if (controller.answerList.isEmpty) {
+                  return const Center(child: Text("No Answer Groups Found"));
+                } else {
+                  return ListView.builder(
+                    itemCount: controller.answerList.length,
+                    itemBuilder: (context, index) {
+                      final item = controller.answerList[index];
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: ActionItemCard(
+                          id: '#ID ${item.answerChoiceGroupId ?? ""}',
+                          title: item.answerChoiceGroupName ?? "",
+                          details: [
+                            {
+                              "label": "Category",
+                              "value": item.categories ?? ""
+                            },
+                            {
+                              "label": "Modified on",
+                              "value": item.modifiedOn ?? ""
+                            },
+                          ],
+                          onEdit: () => showAddQuestionDialog(context),
+                          onCopy: () {},
+                          onDelete: () => showDeleteDialog(context),
+                        ),
+                      );
+                    },
+                  );
+                }
+              }
+            }),
+          ),
+        ],
       ),
     );
   }
@@ -368,6 +381,45 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
   );
 }
 
+void showDeleteDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        title: Text(
+          "Delete Campaign",
+          style: AppTextStyle.bold14(AppColor.blackColor),
+        ),
+        content: Text(
+          "Are you sure you want to delete this Campaign? This process can't be undone",
+          style: AppTextStyle.medium14(AppColor.blackColor),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColor.primaryColor,
+            ),
+            onPressed: () {
+            //  onDelete(); // Call the delete function passed from the caller
+              Navigator.pop(context);
+            },
+            child: const Text("Delete"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 void showAddAnswerChoiceDialog(BuildContext context) {
   final controller = Get.find<QuestionBankController>();
   controller.answerOptionsControllers.clear();
@@ -448,37 +500,15 @@ void showAddAnswerChoiceDialog(BuildContext context) {
                 h(20),
                 Obx(() {
                   final optionCount = controller.answerOptionsControllers.length;
-            
-                  if (optionCount <= 3) {
-                    return Column(
-                      children: controller.answerOptionsControllers
-                          .asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final textController = entry.value;
-            
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 8.h),
-                          child: TextField(
-                            controller: textController,
-                            decoration: InputDecoration(
-                              hintText: 'Option ${index + 1}',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  } else {
-                    return SizedBox(
-                      height: 250.h,
-                      child: ListView.builder(
-                        itemCount: optionCount,
-                        itemBuilder: (context, index) {
-                          final textController = controller.answerOptionsControllers[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                  final children = controller.answerOptionsControllers
+                      .asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final textController = entry.value;
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 8.h),
+                      child: Row(
+                        children: [
+                          Expanded(
                             child: TextField(
                               controller: textController,
                               decoration: InputDecoration(
@@ -488,9 +518,25 @@ void showAddAnswerChoiceDialog(BuildContext context) {
                                 ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                          w(8),
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle, color: AppColor.primaryColor),
+                            onPressed: () {
+                              controller.answerOptionsControllers.removeAt(index);
+                            },
+                          ),
+                        ],
                       ),
+                    );
+                  }).toList();
+
+                  if (optionCount <= 3) {
+                    return Column(children: children);
+                  } else {
+                    return SizedBox(
+                      height: 250.h,
+                      child: ListView(children: children),
                     );
                   }
                 }),

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../common/common_flex.dart';
 import '../../../common/common_textfield.dart';
 import '../../../common/common_widget.dart';
+import '../../../data/local/shared_preference/shared_preference.dart';
 import '../../../nav/app_pages.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_image.dart';
@@ -125,62 +126,35 @@ class LoginPageView extends GetView<LoginPageController> {
                             title: "Login",
                             buttonBackgroundColor: AppColor.primaryColor,
                             titleColor: AppColor.whiteColor,
-                            onPressed: () {
-                              // if (controller.formKey.currentState!.validate()) {
-                                Get.offAllNamed(Routes.home);
-                              // }z
+                            onPressed: () async {
+                              if (controller.formKey.currentState!.validate()) {
+                                final response = await controller.loginMethod(
+                                  email: controller.emailController.text.trim(),
+                                  password: controller.passwordController.text.trim(),
+                                );
+                                print("API Response: $response");
+                                if (response != null && response['result'] != null) {
+                                  await MySharedPref.setString('accessToken', response['result']['accessToken']);
+
+                                  // Optional: save user info
+                                  await MySharedPref.setString('userId', response['result']['id']);
+                                  await MySharedPref.setString('userEmail', response['result']['email']);
+
+                                  // Navigate to home
+                                  Get.offAllNamed(Routes.home);
+                                } else {
+                                  // Login failed
+                                  Get.snackbar(
+                                    "Login Failed",
+                                    response?['message'] ?? "Invalid credentials",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: AppColor.redColor,
+                                    colorText: AppColor.whiteColor,
+                                  );
+                                }
+                              }
                             },
-                          ),
-                          // h(20.h),
-                          // Image.asset(AppImage.orIcon),
-                          // h(10.h),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     Expanded(
-                          //       child: fillButtonWithIcon(
-                          //         icon: AppImage.googleIcon,
-                          //         title: "Google",
-                          //         buttonBackgroundColor: AppColor.whiteColor,
-                          //         titleColor: AppColor.blackColor,
-                          //         borderColor: AppColor.borderColor,
-                          //         onPressed: () {
-                          //         },
-                          //       ),
-                          //     ),
-                          //     w(10.w),
-                          //     Expanded(
-                          //       child: fillButtonWithIcon(
-                          //         title: "Facebook",
-                          //         icon: AppImage.fbIcon,
-                          //         buttonBackgroundColor: AppColor.whiteColor,
-                          //         titleColor: AppColor.blackColor,
-                          //         borderColor: AppColor.borderColor,
-                          //         onPressed: () {
-                          //         },
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-                          // h(16.h),
-                          // Text("Protected by reCAPTCHA and subject to the",
-                          //   style: AppTextStyle.regular12(AppColor.greyPurpleColor,),
-                          // ),
-                          // Wrap(
-                          //   children: [
-                          //     Text("SoftwareLynx Privacy Policy",
-                          //       style: AppTextStyle.regular12(AppColor.primaryColor,),
-                          //     ),
-                          //     w(4.w),
-                          //     Text("and",
-                          //       style: AppTextStyle.regular12(AppColor.greyPurpleColor,),
-                          //     ),
-                          //     w(4.w),
-                          //     Text("Terms of Service.",
-                          //       style: AppTextStyle.regular12(AppColor.primaryColor,),
-                          //     ),
-                          //   ],
-                          // ),
+                          )
                         ],
                       ),
                     ),

@@ -151,9 +151,6 @@ class NewSurveyController extends GetxController {
     super.onInit();
     loadUsers();
   }
-
-
-
   void submitForm() async {
 
     try {

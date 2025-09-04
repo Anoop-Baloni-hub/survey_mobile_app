@@ -19,7 +19,7 @@ class UserScreen extends GetView<Usercontroller> {
   @override
   Widget build(BuildContext context) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
-    final formKey = GlobalKey<FormState>();
+    final formKey1 = GlobalKey<FormState>();
     return AppShell(
         child: SingleChildScrollView(
           child: Column(
@@ -146,7 +146,7 @@ class UserScreen extends GetView<Usercontroller> {
                                 content: SizedBox(
                                   width: MediaQuery.of(context).size.width * 1.w,
                                   child: Form(
-                                    key: formKey,
+                                    key: formKey1,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -286,7 +286,7 @@ class UserScreen extends GetView<Usercontroller> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      if (formKey.currentState!.validate()) {
+                                      if (formKey1.currentState!.validate()) {
 
                                         Navigator.pop(context);
                                       }
@@ -356,7 +356,7 @@ class UserScreen extends GetView<Usercontroller> {
                                 content: SizedBox(
                                   width: MediaQuery.of(context).size.width * 1.w,
                                   child: Form(
-                                    key: formKey,
+                                    key: formKey1,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -496,7 +496,7 @@ class UserScreen extends GetView<Usercontroller> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      if (formKey.currentState!.validate()) {
+                                      if (formKey1.currentState!.validate()) {
 
                                         Navigator.pop(context);
                                       }
