@@ -93,7 +93,7 @@ class QuestionBank extends GetView<QuestionBankController> {
                       color: AppColor.greyPurpleColor,
                       size: 20.sp,
                     ),
-                    textEditController: controller.textController,
+                    textEditController: controller.searchController,
                     hintTextString: "Type into Search",
                     borderColor: AppColor.borderColor,
                     inputType: InputType.defaults,
@@ -141,107 +141,100 @@ class QuestionBank extends GetView<QuestionBankController> {
                     showAddAnswerChoiceDialog(context);
                   }
                 },
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.06,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.r),
-                    color: AppColor.primaryColor,
-                  ),
-                  child: Center(
-                    child: Text(
-                      controller.selectedIndex.value == 0
-                          ? '+ Add Question'
-                          : '+ Add Answer Choice Group',
-                      style: AppTextStyle.semiBold15(AppColor.whiteColor),
+                child: Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.06,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: AppColor.primaryColor,
+                      ),
+                      child: Center(
+                        child: Text(
+                          controller.selectedIndex.value == 0
+                              ? '+ Add Question'
+                              : '+ Add Answer Choice Group',
+                          style: AppTextStyle.semiBold15(AppColor.whiteColor),
+                        ),
+                      ),
                     ),
-                  ),
+                    h(10),
+                    Align(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                        onTap: (){},
+                        child: Text('Page 1 of 10',style: AppTextStyle.medium12(AppColor.blueColor),)))
+                  ],
                 ),
               ),
             );
           }),
           h(20),
-
           Expanded(
             child: Obx(() {
               if (controller.selectedIndex.value == 0) {
-                return Obx(() {
-                  if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (controller.questionList.isEmpty) {
-                    return Center(child: Text("No questions found"));
-                  }
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (controller.filteredQuestionList.isEmpty) {
+                  return const Center(child: Text("No questions found"));
+                }
 
-                  return ListView.builder(
-                    itemCount: controller.questionList.length,
-                    itemBuilder: (context, index) {
-                      final item = controller.questionList[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 12.h),
-                        child: ActionItemCard(
-                          id: '#ID ${item.questionId}',
-                          title: item.questionText ?? '',
-                          details: [
-                            {
-                              "label": "Answer Type",
-                              "value": item.answerType ?? "Text",
-                            },
-                            {
-                              "label": "Category",
-                              "value": item.categories ?? "",
-                            },
-                            {
-                              "label": "Modified on",
-                              "value": item.modifiedOn ?? "",
-                            },
-                          ],
-                          onEdit: () => showAddQuestionDialog(context),
-                          onCopy: () {},
-                          onDelete: () => showDeleteDialog(context),
-                        ),
-                      );
-                    },
-                  );
-                });
-              }
-              else {
+                return ListView.builder(
+                  itemCount: controller.filteredQuestionList.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.filteredQuestionList[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 12.h),
+                      child: ActionItemCard(
+                        id: '#ID ${item.questionId}',
+                        title: item.questionText ?? '',
+                        details: [
+                          {"label": "Answer Type", "value": item.answerType ?? "Text"},
+                          {"label": "Category", "value": item.categories ?? ""},
+                          {"label": "Modified on", "value": item.modifiedOn ?? ""},
+                        ],
+                        onEdit: () => showAddQuestionDialog(context),
+                        onCopy: () {},
+                        onDelete: () => showDeleteDialog(context),
+                      ),
+                    );
+                  },
+                );
+              } else {
                 if (controller.isLoading.value) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (controller.errorMessage.value.isNotEmpty) {
                   return Center(child: Text(controller.errorMessage.value));
-                } else if (controller.answerList.isEmpty) {
+                } else if (controller.filteredAnswerList.isEmpty) {
                   return const Center(child: Text("No Answer Groups Found"));
-                } else {
-                  return ListView.builder(
-                    itemCount: controller.answerList.length,
-                    itemBuilder: (context, index) {
-                      final item = controller.answerList[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 12.h),
-                        child: ActionItemCard(
-                          id: '#ID ${item.answerChoiceGroupId ?? ""}',
-                          title: item.answerChoiceGroupName ?? "",
-                          details: [
-                            {
-                              "label": "Category",
-                              "value": item.categories ?? ""
-                            },
-                            {
-                              "label": "Modified on",
-                              "value": item.modifiedOn ?? ""
-                            },
-                          ],
-                          onEdit: () => showAddQuestionDialog(context),
-                          onCopy: () {},
-                          onDelete: () => showDeleteDialog(context),
-                        ),
-                      );
-                    },
-                  );
                 }
+
+                return ListView.builder(
+                  itemCount: controller.filteredAnswerList.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.filteredAnswerList[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 12.h),
+                      child: ActionItemCard(
+                        id: '#ID ${item.answerChoiceGroupId ?? ""}',
+                        title: item.answerChoiceGroupName ?? "",
+                        details: [
+                          {"label": "Category", "value": item.categories ?? ""},
+                          {"label": "Modified on", "value": item.modifiedOn ?? ""},
+                        ],
+                        onEdit: () => showAddQuestionDialog(context),
+                        onCopy: () {},
+                        onDelete: () => showDeleteDialog(context),
+                      ),
+                    );
+                  },
+                );
               }
             }),
           ),
+          h(10),
+
         ],
       ),
     );

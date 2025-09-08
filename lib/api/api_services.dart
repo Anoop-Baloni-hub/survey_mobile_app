@@ -1,29 +1,33 @@
 import 'package:dio/dio.dart';
-import 'package:survey_app/services/base_services.dart';
-
+import '../data/local/shared_preference/shared_preference.dart';
 import 'injection_container.dart';
 final DioClient apiClient = DioClient();
-
 class DioClient {
   final Dio dio = getDio();
+  String? _token;
 
+  void setToken(String token) {
+    _token = token;
+  }
    Options options = Options(
      receiveDataWhenStatusError: true,
      contentType: "application/json",
      sendTimeout: const Duration(seconds: 5),
      receiveTimeout: const Duration(seconds: 5),
    );
-
   String? bearerToken;
-  void setToken(String token) {
-    bearerToken = token;
-  }
+  // void setToken(String token) {
+  //   bearerToken = token;
+  // }
 
-  Map<String, dynamic> getHeaders( isAuthRequired) {
-    if (isAuthRequired && bearerToken != null) {
-      return {"Authorization": "Bearer $bearerToken"};
+  Map<String, String> getHeaders({bool isAuthRequired = false}) {
+    final headers = {'Content-Type': 'application/json'};
+    if (isAuthRequired) {
+      // Prefer saved token from SharedPreferences if _token is null
+      final token = _token ?? MySharedPref.getString("accessToken") ?? '';
+      if (token.isNotEmpty) headers['Authorization'] = 'Bearer $token';
     }
-    return {};
+    return headers;
   }
 
    ///Get Api ======
@@ -32,7 +36,7 @@ class DioClient {
     Map<String, dynamic>? queryParameters,
     bool isAuthRequired = false,
   }) async {
-    options.headers = getHeaders(isAuthRequired);
+    options.headers = getHeaders(isAuthRequired: isAuthRequired);
     final fullUrl = Uri.parse(url).replace(queryParameters: queryParameters);
     print("GET Request → $fullUrl");
     print("Headers → ${options.headers}");
@@ -58,7 +62,7 @@ class DioClient {
   ///Post Api ======
    Future <dynamic> post ({required String url, Object? requestBody,
      bool isAuthRequired = false})async{
-     options.headers = getHeaders(isAuthRequired);
+     options.headers = getHeaders(isAuthRequired: isAuthRequired);
 
      try{
        Response response;
@@ -76,7 +80,7 @@ class DioClient {
 
   ///Put Api ======
   Future <dynamic> put ({required String url, Object? requestBody, bool isAuthRequired = false})async{
-    options.headers = getHeaders(isAuthRequired);
+    options.headers = getHeaders(isAuthRequired: isAuthRequired);
 
     try{
       Response response;
@@ -92,10 +96,9 @@ class DioClient {
     }
   }
 
-
   ///Patch Api ======
   Future <dynamic> patch ({required String url, Object? requestBody, bool isAuthRequired = false})async{
-    options.headers = getHeaders(isAuthRequired);
+    options.headers = getHeaders(isAuthRequired: isAuthRequired);
 
     try{
       Response response;
@@ -111,10 +114,9 @@ class DioClient {
     }
   }
 
-
   ///Delete Api ======
   Future <dynamic> delete ({required String url, Object? requestBody, bool isAuthRequired = false})async{
-    options.headers = getHeaders(isAuthRequired);
+    options.headers = getHeaders(isAuthRequired: isAuthRequired);
 
     try{
       Response response;

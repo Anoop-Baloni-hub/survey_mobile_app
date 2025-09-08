@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:survey_app/Screens/HomeScreens/controllers/home_controller.dart';
+import 'package:survey_app/Screens/authentication/controllers/login_page_controller.dart';
 import '../nav/app_pages.dart';
 import 'common_appbar.dart';
 import 'common_drawer.dart';
@@ -21,7 +22,7 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final HomePageController controller = Get.find<HomePageController>();
-
+  final LoginPageController logController = Get.put(LoginPageController());
   @override
   void initState() {
     super.initState();
@@ -41,7 +42,7 @@ class _AppShellState extends State<AppShell> {
             () => CommonDrawer(
           selectedRoute: controller.selectedRoute.value,
           header: SizedBox(
-            height: 50,
+            height: 50.h,
             child: Image.asset(AppImage.appLogo, fit: BoxFit.contain),
           ),
           items: drawerItems(),
@@ -53,7 +54,9 @@ class _AppShellState extends State<AppShell> {
               Get.offNamed(route);
             }
           },
-          onLogout: () {},
+          onLogout: () {
+            Get.put(LoginPageController()).logout();
+          },
         ),
       ),
 

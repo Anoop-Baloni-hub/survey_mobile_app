@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:survey_app/Screens/Campaign/Views/camaign_screen.dart';
 import 'package:survey_app/Screens/Campaign/Views/create_new_survey_screen.dart';
@@ -13,6 +14,7 @@ import 'package:survey_app/Screens/Users/bindings/users_binding.dart';
 import '../Screens/Campaign/Views/campaign_dashboard.dart';
 import '../Screens/authentication/bindings/login_page_bindings.dart';
 import '../Screens/authentication/view/login_page_view.dart';
+import '../data/local/shared_preference/shared_preference.dart';
 
 part 'app_routes.dart';
 
@@ -26,11 +28,13 @@ class AppPages {
       name: _Paths.login,
       page: () => const LoginPageView(),
       binding: LoginPageBindings(),
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: _Paths.home,
       page: () => const HomePageView(),
       binding: HomePageBinding(),
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: _Paths.questionBank,
@@ -59,4 +63,25 @@ class AppPages {
       binding: SurveyBinding(),
     ),
   ];
+}
+
+
+class AuthGuard extends GetMiddleware {
+  @override
+  int? priority = 0;
+
+  @override
+  RouteSettings? redirect(String? route) {
+    bool? isLoggedIn = MySharedPref.getBool("isLoggedIn") ?? false;
+
+    if (isLoggedIn && route == Routes.login) {
+      return const RouteSettings(name: Routes.home);
+    }
+
+    if (!isLoggedIn && (route == Routes.home || route == Routes.dashboard)) {
+      return const RouteSettings(name: Routes.login);
+    }
+
+    return null;
+  }
 }

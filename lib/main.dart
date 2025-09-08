@@ -5,12 +5,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:survey_app/utils/app_color.dart';
+import 'api/api_services.dart';
 import 'data/local/shared_preference/shared_preference.dart';
 import 'nav/app_pages.dart';
 
-Future<void> main() async {
+
+Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await MySharedPref.init();
+
+  final savedToken = MySharedPref.getString("accessToken");
+  if (savedToken != null && savedToken.isNotEmpty) {
+    apiClient.setToken(savedToken);
+    print("Restored token: $savedToken");
+  }
+}
+
+Future<void> main() async {
+  await initApp();
+  WidgetsFlutterBinding.ensureInitialized();
+ // await MySharedPref.init();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: AppColor.primaryColor,

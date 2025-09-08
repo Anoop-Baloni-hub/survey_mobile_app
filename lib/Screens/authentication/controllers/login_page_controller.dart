@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import '../../../api/api_services.dart';
 import '../../../api/api_url.dart';
 import '../../../data/local/shared_preference/shared_preference.dart';
-import '../../HomeScreens/view/home_page.dart';
-import '../view/login_page_view.dart';
+import '../../../nav/app_pages.dart';
+
 
 class LoginPageController extends GetxController {
   final DioClient dioClient = ApiUrl.dioClient;
@@ -21,30 +21,8 @@ class LoginPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-   // redirectUser();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  // void redirectUser() {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     final bool isLoggedIn = MySharedPref.getBool("isLoggedIn") ?? false;
-  //
-  //     if (isLoggedIn) {
-  //       Get.offAll(() => const HomePageView());
-  //     } else {
-  //       Get.offAll(() => const LoginPageView());
-  //     }
-  //   });
-  // }
 
   Future<Map<String, dynamic>?> loginMethod({
       required String email,
@@ -53,6 +31,7 @@ class LoginPageController extends GetxController {
       final Map<String, dynamic> requestBody = {
         "email": email,
         "password": password,
+        "rememberMe": true,
       };
 
       final response = await dioClient.post(
@@ -69,8 +48,6 @@ class LoginPageController extends GetxController {
         } else {
           jsonResponse = jsonDecode(response.toString());
         }
-        //print("Login API Response → $jsonResponse");
-
         final accessToken = jsonResponse["result"]?["accessToken"];
         if (accessToken != null) {
           dioClient.setToken(accessToken);
@@ -81,12 +58,15 @@ class LoginPageController extends GetxController {
         } else {
           print(" No accessToken found in response: $jsonResponse");
         }
-
-
         return jsonResponse;
       } else {
         return null;
       }
     }
 
+  Future<void> logout() async {
+    await MySharedPref.setBool("isLoggedIn", false);
+    await MySharedPref.clearKey("accessToken");
+    Get.offAllNamed(Routes.login);
+  }
 }

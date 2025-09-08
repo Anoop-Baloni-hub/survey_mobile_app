@@ -18,9 +18,12 @@ class QuestionBankController extends GetxController{
   var errorMessage = "".obs;
   var answerList = <AnswerGroupResponseModel>[].obs;
   var questionList = <QuestionResponseModel>[].obs;
+  var filteredQuestionList = <QuestionResponseModel>[].obs;
+  var filteredAnswerList = <AnswerGroupResponseModel>[].obs;
 
 
   TextEditingController textController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
   TextEditingController minController = TextEditingController();
   TextEditingController maxController = TextEditingController();
   TextEditingController optionsController = TextEditingController();
@@ -60,6 +63,7 @@ class QuestionBankController extends GetxController{
   @override
   void onInit() {
     super.onInit();
+    searchController.addListener(() => filterSearch(searchController.text));
     fetchAnswerGroups();
     fetchQuestionGroups();
   }
@@ -75,7 +79,7 @@ class QuestionBankController extends GetxController{
       };
       final fullUrl = Uri.parse(ApiUrl.answerChoiceList).replace(queryParameters: queryParams);
       print("Fetching Answer Groups → $fullUrl");
-      print("Headers → ${ApiUrl.dioClient.getHeaders(true)}");
+      print("Headers → ${ApiUrl.dioClient.getHeaders(isAuthRequired: true)}");
 
       final response = await ApiUrl.dioClient.get(
         url: ApiUrl.answerChoiceList,
@@ -88,6 +92,7 @@ class QuestionBankController extends GetxController{
         answerList.value = model.result?.answerGroupResponseModel ?? [];
 
         print("Fetched Answer Groups:");
+        filteredAnswerList.assignAll(answerList);
         answerList.forEach((item) {
           print(
               "ID: ${item.answerChoiceGroupId}, "
@@ -116,7 +121,7 @@ class QuestionBankController extends GetxController{
     };
     final fullUrl = Uri.parse(ApiUrl.questionList).replace(queryParameters: queryParams);
     print("Fetching Answer Groups → $fullUrl");
-    print("Headers → ${ApiUrl.dioClient.getHeaders(true)}");
+    print("Headers → ${ApiUrl.dioClient.getHeaders(isAuthRequired: true)}");
 
     final response = await ApiUrl.dioClient.get(
       url: ApiUrl.questionList,
@@ -129,6 +134,7 @@ class QuestionBankController extends GetxController{
       questionList.value = model.result?.questionResponseModel ?? [];
 
       print("Fetched Answer Groups:");
+      filteredQuestionList.assignAll(questionList);
       questionList.forEach((item) {
         print(
             "ID: ${item.questionId}, "
@@ -146,4 +152,32 @@ class QuestionBankController extends GetxController{
   }
 }
 
+
+  void filterSearch(String query) {
+    if (selectedIndex.value == 0) {
+      // Filter questions
+      if (query.isEmpty) {
+        filteredQuestionList.assignAll(questionList);
+      } else {
+        filteredQuestionList.assignAll(
+          questionList.where((q) =>
+              (q.questionText ?? "")
+                  .toLowerCase()
+                  .contains(query.toLowerCase())),
+        );
+      }
+    } else {
+      // Filter answers
+      if (query.isEmpty) {
+        filteredAnswerList.assignAll(answerList);
+      } else {
+        filteredAnswerList.assignAll(
+          answerList.where((a) =>
+              (a.answerChoiceGroupName ?? "")
+                  .toLowerCase()
+                  .contains(query.toLowerCase())),
+        );
+      }
+    }
+  }
 }

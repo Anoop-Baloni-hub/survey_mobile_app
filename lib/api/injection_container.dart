@@ -10,7 +10,6 @@ Dio getDio(){
 
   dio.interceptors.add(
     InterceptorsWrapper(
-
       onRequest: (RequestOptions options, handler){
         printValue(tag: 'API URl:', '${options.uri}');
         printValue(tag: 'HEADER:', '${options.headers}');
