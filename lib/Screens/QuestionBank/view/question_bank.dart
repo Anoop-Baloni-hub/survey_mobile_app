@@ -100,32 +100,64 @@ class QuestionBank extends GetView<QuestionBankController> {
                   ),
                 ),
                 SizedBox(width: 20.w),
-                Container(
-                  height: 32.h,
-                  width: 75.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColor.lightGreyColor),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Short By",
-                          style: AppTextStyle.medium12(AppColor.greyColor),
+                Obx(() {
+                  return GestureDetector(
+                    onTap: () async {
+                      final RenderBox box = context.findRenderObject() as RenderBox;
+                      final Offset position = box.localToGlobal(Offset.zero);
+
+                      final result = await showMenu(
+                        color: AppColor.offWhite,
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          position.dx + box.size.width,
+                          position.dy,
+                          0, 0,
                         ),
-                        w(3),
-                        const Icon(
-                          Icons.swap_vert,
-                          color: AppColor.greyColor,
-                          size: 16,
+                        items: controller.sortOptions.map((option) {
+                          return PopupMenuItem(
+                            value: option,
+                            child: Container(
+                              // color:  AppColor.greyColor,
+                              padding:  EdgeInsets.symmetric(vertical: 6.h, horizontal: 8.w),
+                              child: Text(option, style:AppTextStyle.semiBold12(AppColor.blackColor)),
+                            ),
+                          );
+                        }).toList(),
+                      );
+
+                      if (result != null) {
+                        controller.changeSort(result);
+                      }
+                    },
+                    child: Container(
+                      height: 32.h,
+                      width: 75.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColor.lightGreyColor),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 3.w),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              controller.selectedSort.value,
+                              style: AppTextStyle.medium12(AppColor.greyColor),
+                            ),
+                            w(3),
+                            const Icon(
+                              Icons.swap_vert,
+                              color: AppColor.greyColor,
+                              size: 16,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               ],
             ),
           ),
@@ -160,11 +192,11 @@ class QuestionBank extends GetView<QuestionBankController> {
                       ),
                     ),
                     h(10),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                        onTap: (){},
-                        child: Text('Page 1 of 10',style: AppTextStyle.medium12(AppColor.blueColor),)))
+                    // Align(
+                    //     alignment: Alignment.centerRight,
+                    //     child: InkWell(
+                    //     onTap: (){},
+                    //     child: Text('Page 1 of 10',style: AppTextStyle.medium12(AppColor.blueColor),)))
                   ],
                 ),
               ),
@@ -196,7 +228,8 @@ class QuestionBank extends GetView<QuestionBankController> {
                         ],
                         onEdit: () => showAddQuestionDialog(context),
                         onCopy: () {},
-                        onDelete: () => showDeleteDialog(context),
+                        onDelete: () => showDeleteDialog(context, item.questionId!),
+
                       ),
                     );
                   },
@@ -225,7 +258,7 @@ class QuestionBank extends GetView<QuestionBankController> {
                         ],
                         onEdit: () => showAddQuestionDialog(context),
                         onCopy: () {},
-                        onDelete: () => showDeleteDialog(context),
+                        onDelete: () => showDeleteDialog(context, item.answerChoiceGroupId!),
                       ),
                     );
                   },
@@ -358,9 +391,10 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async{
               print("Question submitted: ${controller.textController.text}");
-              Navigator.pop(context);
+              await controller.submitQuestion();
+              Navigator.pop( context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColor.primaryColor),
             child: Text(
@@ -374,7 +408,8 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
   );
 }
 
-void showDeleteDialog(BuildContext context) {
+void showDeleteDialog(BuildContext context, int questionId) {
+  final controller = Get.find<QuestionBankController>();
   showDialog(
     context: context,
     builder: (context) {
@@ -402,7 +437,7 @@ void showDeleteDialog(BuildContext context) {
               backgroundColor: AppColor.primaryColor,
             ),
             onPressed: () {
-            //  onDelete(); // Call the delete function passed from the caller
+              controller.deleteQuestion(questionId);
               Navigator.pop(context);
             },
             child: const Text("Delete"),

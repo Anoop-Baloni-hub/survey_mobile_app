@@ -118,3 +118,36 @@ class QuestionResponseModel {
     return data;
   }
 }
+
+
+
+class SubmitQuestionModel {
+  int? result;
+  String? message;
+
+  SubmitQuestionModel({this.result, this.message});
+
+  SubmitQuestionModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      result = 0;
+      message = "No response";
+      return;
+    }
+    result = json['result'] is int ? json['result'] : 0;
+    message = json['message'];
+
+    // normalize: treat -1 as success if message says "deleted successfully"
+    if (result == -1 && (message?.toLowerCase().contains("success") ?? false)) {
+      result = 1;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'result': result,
+      'message': message,
+    };
+  }
+}
+
+

@@ -15,4 +15,6 @@ class ApiUrl {
   static String get login => createAPIUrl('account/login');
   static String get answerChoiceList => createAPIUrl('answer-choice-group');
   static String get questionList => createAPIUrl('question');
+  static String get addQuestion => createAPIUrl('question');
+
 }

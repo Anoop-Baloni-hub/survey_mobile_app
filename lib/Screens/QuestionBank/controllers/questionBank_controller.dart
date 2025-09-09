@@ -2,13 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get/get.dart';
 
+import '../../../api/api_services.dart';
 import '../../../api/api_url.dart';
 import '../../../utils/app_color.dart';
+import '../repository/question_repository.dart';
 import '../viewModel/AnswerList.dart';
 import '../viewModel/questionList.dart';
 
 class QuestionBankController extends GetxController{
-
+  final QuestionRepository questionRepo;
+  QuestionBankController(this.questionRepo);
   var selectedIndex = 0.obs;
   var selectedOption = ''.obs;
   final selectedCategoriesText = ''.obs;
@@ -20,6 +23,11 @@ class QuestionBankController extends GetxController{
   var questionList = <QuestionResponseModel>[].obs;
   var filteredQuestionList = <QuestionResponseModel>[].obs;
   var filteredAnswerList = <AnswerGroupResponseModel>[].obs;
+  var selectedSort = "Sort By".obs;
+  final List<String> sortOptions = ["Last Modified", "Most Responses", "Ending soon"];
+  void changeSort(String value) {
+    selectedSort.value = value;
+  }
 
 
   TextEditingController textController = TextEditingController();
@@ -43,7 +51,8 @@ class QuestionBankController extends GetxController{
     'Rating Scale',
     'Matrix Question',
     'Star Type Rating',
-    'Overall Experience'
+    'Overall Experience',
+    'Text',
   ].obs;
 
   final categoryList = <String, bool>{
@@ -68,7 +77,7 @@ class QuestionBankController extends GetxController{
     fetchQuestionGroups();
   }
 
-  Future<void> fetchAnswerGroups({int page = 1, int limit = 10}) async {
+  Future<void> fetchAnswerGroups({int page = 1, int limit = 100}) async {
     try {
       isLoading(true);
       errorMessage("");
@@ -110,7 +119,7 @@ class QuestionBankController extends GetxController{
     }
   }
 
-  Future <void> fetchQuestionGroups({int page = 1, int limit = 10})async{
+  Future <void> fetchQuestionGroups({int page = 1, int limit = 100})async{
   try {
     isLoading(true);
     errorMessage("");
@@ -152,32 +161,83 @@ class QuestionBankController extends GetxController{
   }
 }
 
-
   void filterSearch(String query) {
-    if (selectedIndex.value == 0) {
-      // Filter questions
-      if (query.isEmpty) {
-        filteredQuestionList.assignAll(questionList);
-      } else {
-        filteredQuestionList.assignAll(
-          questionList.where((q) =>
-              (q.questionText ?? "")
-                  .toLowerCase()
-                  .contains(query.toLowerCase())),
-        );
-      }
+    if (query.isEmpty) {
+      filteredQuestionList.assignAll(questionList); // ✅ keeps it reactive
     } else {
-      // Filter answers
-      if (query.isEmpty) {
-        filteredAnswerList.assignAll(answerList);
-      } else {
-        filteredAnswerList.assignAll(
-          answerList.where((a) =>
-              (a.answerChoiceGroupName ?? "")
-                  .toLowerCase()
-                  .contains(query.toLowerCase())),
-        );
-      }
+      filteredQuestionList.assignAll(
+        questionList.where((q) =>
+        q.questionText?.toLowerCase().contains(query.toLowerCase()) ?? false
+        ),
+      );
     }
   }
+
+  Future<void> submitQuestion() async {
+    final body = {
+      "questionId": 0,
+      "questionText": textController.text,
+      "answerTypeId": 6,
+      "dateValidationId": 1,
+      "isActive": true,
+      "createdBy": "admin",
+      "updatedBy": "admin",
+      "categoryModel": [
+        {"categoryId": 1}
+      ],
+      "rateScaleModel": [],
+      "questionAnswerChoiceModel": []
+    };
+
+    final apiResponse = await questionRepo.createQuestion(body);
+
+    if (apiResponse != null) {
+      print(" Question created successfully → $apiResponse");
+
+      final newQuestion = QuestionResponseModel(
+        questionId: apiResponse['result'] as int?,
+        questionText: body['questionText'].toString(),
+        answerTypeId: body['answerTypeId'] as int?,
+        dateValidationId: body['dateValidationId'] as int?,
+        categories: (body['categoryModel'] as List)
+            .map((c) => c['categoryId'].toString())
+            .join(","),
+        isMandatory: false,
+        modifiedOn: DateTime.now().toIso8601String(),
+      );
+
+      questionList.add(newQuestion);
+      filterSearch(searchController.text);
+
+      Get.snackbar("Success", "Question added successfully");
+      textController.clear();
+    } else {
+      print(" Failed to create question");
+      Get.snackbar("Error", "Failed to add question");
+    }
+  }
+
+  Future<void> deleteQuestion(int questionId) async {
+    final result = await questionRepo.deleteQuestion(questionId);
+
+    if (result != null && result.message?.toLowerCase().contains("success") == true) {
+      questionList.removeWhere((q) => q.questionId == questionId);
+      filteredQuestionList.removeWhere((q) => q.questionId == questionId);
+      update();
+      Get.snackbar(
+        "Success",
+        result.message ?? "Question deleted successfully",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      print("Deleted Question → ${result.message}");
+    } else {
+      Get.snackbar(
+        "Error",
+        result?.message ?? "Failed to delete question",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      print("Failed to delete question → ${result?.message}");
+    }
+  }
+
 }
