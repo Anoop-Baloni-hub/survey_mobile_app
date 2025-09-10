@@ -42,4 +42,34 @@ class QuestionRepository {
       return null;
     }
   }
+
+  Future<SubmitQuestionModel?> updateQuestion(
+      int questionId, Map<String, dynamic> body) async {
+    try {
+      // backend ko sirf base url chahiye, id body me rahega
+      final updatedBody = {
+        ...body,
+        "questionId": questionId,
+      };
+
+      final response = await _client.put(
+        url: ApiUrl.questionList,
+        requestBody: updatedBody,
+        isAuthRequired: true,
+      );
+
+      if (response == null) {
+        print("Update API returned null");
+        return null;
+      }
+
+      print("Update API Response → $response");
+      return SubmitQuestionModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      print("updateQuestion error: $e");
+      return null;
+    }
+  }
+
+
 }

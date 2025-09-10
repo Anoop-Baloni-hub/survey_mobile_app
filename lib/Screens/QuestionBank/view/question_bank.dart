@@ -17,6 +17,7 @@ import '../../../common/common_flex.dart';
 import '../../../common/common_textfield.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_image.dart';
+import '../viewModel/questionList.dart';
 
 class QuestionBank extends GetView<QuestionBankController> {
   const QuestionBank({super.key});
@@ -226,7 +227,11 @@ class QuestionBank extends GetView<QuestionBankController> {
                           {"label": "Category", "value": item.categories ?? ""},
                           {"label": "Modified on", "value": item.modifiedOn ?? ""},
                         ],
-                        onEdit: () => showAddQuestionDialog(context),
+                        onEdit: () => showAddQuestionDialog(
+                          context,
+                          isEdit: true,
+                          question: item,
+                        ),
                         onCopy: () {},
                         onDelete: () => showDeleteDialog(context, item.questionId!),
 
@@ -274,8 +279,53 @@ class QuestionBank extends GetView<QuestionBankController> {
   }
 }
 
-void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
+void showAddQuestionDialog(
+    BuildContext context, {
+      bool isEdit = false,
+      QuestionResponseModel? question,
+    }) {
   final controller = Get.find<QuestionBankController>();
+
+  if (isEdit && question != null) {
+    // ✅ Prefill text
+    controller.textController.text = question.questionText ?? "";
+
+    // ✅ Prefill dropdown
+    controller.selectedOption.value =
+        controller.mapAnswerTypeIdToName(question.answerTypeId ?? 0);
+
+    // ✅ Reset all categories first
+    controller.categoryList.updateAll((key, value) => false);
+
+    // ✅ Prefill categories if available
+    if (question.categories != null && question.categories!.isNotEmpty) {
+      final selectedCats =
+      question.categories!.split(",").map((e) => e.trim()).toList();
+
+      for (var key in controller.categoryList.keys) {
+        controller.categoryList[key] = selectedCats.contains(key);
+      }
+
+      controller.categoryController.text = selectedCats.join(", ");
+    } else {
+      controller.categoryController.clear();
+    }
+
+    // ✅ Prefill min/max characters
+    controller.minController.text =
+        question.minimumCharacter?.toString() ?? "";
+    controller.maxController.text =
+        question.maximumCharacter?.toString() ?? "";
+  } else {
+    // ✅ Clear fields when adding
+    controller.textController.clear();
+    controller.selectedOption.value = "";
+    controller.categoryController.clear();
+    controller.minController.clear();
+    controller.maxController.clear();
+    controller.categoryList.updateAll((key, value) => false);
+  }
+
   showDialog(
     context: context,
     builder: (context) {
@@ -305,7 +355,9 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
                   child: Text(option),
                 ))
                     .toList(),
-                value: controller.selectedOption.value,
+                value: controller.selectedOption.value.isEmpty
+                    ? null
+                    : controller.selectedOption.value,
                 onChanged: (value) {
                   controller.selectedOption.value = value!;
                 },
@@ -329,12 +381,14 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
                       content: Obx(() => SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: controller.categoryList.keys.map((category) {
+                          children:
+                          controller.categoryList.keys.map((category) {
                             return CheckboxListTile(
                               title: Text(category),
                               value: controller.categoryList[category],
                               onChanged: (val) {
-                                controller.categoryList[category] = val ?? false;
+                                controller.categoryList[category] =
+                                    val ?? false;
                               },
                             );
                           }).toList(),
@@ -352,7 +406,8 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
                                 .map((e) => e.key)
                                 .toList();
 
-                            controller.categoryController.text = selected.join(", ");
+                            controller.categoryController.text =
+                                selected.join(", ");
                             Navigator.pop(context);
                           },
                           child: const Text("OK"),
@@ -369,7 +424,6 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
                     Expanded(
                       child: CustomTextInput(
                         textEditController: controller.minController,
-                       // keyboardType: TextInputType.number,
                         hintTextString: 'Min Character',
                       ),
                     ),
@@ -391,12 +445,21 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: () async{
-              print("Question submitted: ${controller.textController.text}");
-              await controller.submitQuestion();
-              Navigator.pop( context);
+            onPressed: () async {
+              print(
+                  "Question submitted: ${controller.textController.text} | Edit: $isEdit");
+
+              final success = await controller.submitQuestion(
+                isEdit: isEdit,
+                questionId: question?.questionId,
+              );
+
+              if (success && context.mounted) {
+                Navigator.pop(context);
+              }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColor.primaryColor),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.primaryColor),
             child: Text(
               isEdit ? "Update" : "Submit",
               style: AppTextStyle.semiBold12(AppColor.whiteColor),
@@ -407,6 +470,7 @@ void showAddQuestionDialog(BuildContext context, {bool isEdit = true}) {
     },
   );
 }
+
 
 void showDeleteDialog(BuildContext context, int questionId) {
   final controller = Get.find<QuestionBankController>();
@@ -470,7 +534,7 @@ void showAddAnswerChoiceDialog(BuildContext context) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTextInput(
-                  textEditController: controller.textController,
+                  textEditController: controller.answerTextController,
                   hintTextString: 'Enter Answer Choice Group Name',
                 ),
                 h(20),
@@ -531,14 +595,14 @@ void showAddAnswerChoiceDialog(BuildContext context) {
                   final children = controller.answerOptionsControllers
                       .asMap().entries.map((entry) {
                     final index = entry.key;
-                    final textController = entry.value;
+                    final answerTextController = entry.value;
                     return Padding(
                       padding: EdgeInsets.only(bottom: 8.h),
                       child: Row(
                         children: [
                           Expanded(
                             child: TextField(
-                              controller: textController,
+                              controller: answerTextController,
                               decoration: InputDecoration(
                                 hintText: 'Option ${index + 1}',
                                 border: OutlineInputBorder(

@@ -92,6 +92,11 @@ class DioClient {
       return response.data ;
 
     } catch (error){
+      print("PUT request error → $error");
+      if (error is DioException) {
+        print("Status code → ${error.response?.statusCode}");
+        print("Response data → ${error.response?.data}");
+      }
       return null;
     }
   }

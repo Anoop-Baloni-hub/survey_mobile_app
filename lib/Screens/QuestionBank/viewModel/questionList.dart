@@ -60,8 +60,8 @@ class QuestionResponseModel {
   bool? isMandatory;
   int? reOrder;
   String? modifiedOn;
-  Null minimumCharacter;
-  Null maximumCharacter;
+  int? minimumCharacter;
+  int? maximumCharacter;
   Null choice1;
   Null choice2;
   int? totalCount;

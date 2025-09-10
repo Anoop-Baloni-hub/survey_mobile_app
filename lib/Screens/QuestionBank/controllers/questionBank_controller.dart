@@ -31,6 +31,7 @@ class QuestionBankController extends GetxController{
 
 
   TextEditingController textController = TextEditingController();
+  TextEditingController answerTextController = TextEditingController();
   TextEditingController searchController = TextEditingController();
   TextEditingController minController = TextEditingController();
   TextEditingController maxController = TextEditingController();
@@ -41,7 +42,7 @@ class QuestionBankController extends GetxController{
     'Boolean',
     'Single Choice',
     'Multiple Choice',
-    'Rainking',
+    'Ranking',
     'Date',
     'Numeric',
     'Integer',
@@ -70,6 +71,7 @@ class QuestionBankController extends GetxController{
   }
 
   @override
+
   void onInit() {
     super.onInit();
     searchController.addListener(() => filterSearch(searchController.text));
@@ -173,47 +175,138 @@ class QuestionBankController extends GetxController{
     }
   }
 
-  Future<void> submitQuestion() async {
-    final body = {
-      "questionId": 0,
-      "questionText": textController.text,
-      "answerTypeId": 6,
-      "dateValidationId": 1,
-      "isActive": true,
-      "createdBy": "admin",
-      "updatedBy": "admin",
-      "categoryModel": [
-        {"categoryId": 1}
-      ],
-      "rateScaleModel": [],
-      "questionAnswerChoiceModel": []
-    };
+  Future<bool> submitQuestion({bool isEdit = false, int? questionId}) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = "";
 
-    final apiResponse = await questionRepo.createQuestion(body);
+      final selectedCategories = categoryList.entries
+          .where((e) => e.value)
+          .map((e) => _mapCategoryNameToId(e.key))
+          .toList();
 
-    if (apiResponse != null) {
-      print(" Question created successfully → $apiResponse");
+      final body = {
+        "surveyQuestionId": isEdit ? 1 : 0,
+        "questionId": isEdit ? (questionId ?? 0) : 0,
+        "questionText": textController.text.trim(),
+        "answerTypeId": _mapAnswerTypeToId(selectedOption.value),
+        "dateValidationId": 1,
+        "isActive": true,
+        "createdBy": "admin",
+        "updatedBy": "admin",
+        "isDefault": true,
+        "minimumCharacter": isEdit ? int.tryParse(minController.text) ?? 0 : 0,
+        "maximumCharacter": isEdit ? int.tryParse(maxController.text) ?? 0 : 0,
+        "categoryModel": selectedCategories.map((id) => {"categoryId": id}).toList(),
+        "questionAnswerChoiceModel": [],
+      };
 
-      final newQuestion = QuestionResponseModel(
-        questionId: apiResponse['result'] as int?,
-        questionText: body['questionText'].toString(),
-        answerTypeId: body['answerTypeId'] as int?,
-        dateValidationId: body['dateValidationId'] as int?,
-        categories: (body['categoryModel'] as List)
-            .map((c) => c['categoryId'].toString())
-            .join(","),
-        isMandatory: false,
-        modifiedOn: DateTime.now().toIso8601String(),
-      );
+      dynamic response;
+      if (isEdit) {
+        response = await questionRepo.updateQuestion(questionId ?? 0, body);
 
-      questionList.add(newQuestion);
-      filterSearch(searchController.text);
+        if (response != null) {
+          final index = questionList.indexWhere((q) => q.questionId == questionId);
+          if (index != -1) {
+            // ✅ Update UI list directly
+            questionList[index].questionText = body["questionText"]?.toString();
+            questionList[index].answerTypeId = body["answerTypeId"] as int?;
+            questionList[index].categories = categoryController.text;
+            questionList[index].minimumCharacter =
+            body["minimumCharacter"] as int?;
+            questionList[index].maximumCharacter =
+            body["maximumCharacter"] as int?;
+          }
 
-      Get.snackbar("Success", "Question added successfully");
-      textController.clear();
-    } else {
-      print(" Failed to create question");
-      Get.snackbar("Error", "Failed to add question");
+          filteredQuestionList.assignAll(questionList);
+        }
+      } else {
+        response = await questionRepo.createQuestion(body);
+        print("Create API Response → $response");
+
+        if (response != null) {
+          // ✅ handle Map response
+          if (response is Map<String, dynamic> && response["result"] != null) {
+            final result = response["result"];
+
+            if (result is Map<String, dynamic>) {
+              final newQuestion = QuestionResponseModel.fromJson(result);
+              questionList.add(newQuestion);
+            } else if (result is List) {
+              final newQuestions = result
+                  .map((e) => QuestionResponseModel.fromJson(e))
+                  .toList();
+              questionList.addAll(newQuestions);
+            }
+          }
+
+          filteredQuestionList.assignAll(questionList);
+        }
+      }
+
+      if (response != null) {
+        Get.snackbar("✅ Success", isEdit ? "Question updated" : "Question created");
+        return true;
+      } else {
+        Get.snackbar("❌ Error", "Something went wrong");
+        return false;
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+      Get.snackbar("Error", "Submit failed: $e");
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// map answer type string -> backend ID
+  int _mapAnswerTypeToId(String option) {
+    switch (option) {
+      case "Boolean":
+        return 1;
+      case "Single Choice":
+        return 2;
+      case "Multiple Choice":
+        return 3;
+      case "Ranking":
+        return 4;
+      case "Date":
+        return 5;
+      case "Numeric":
+        return 6;
+      case "Integer":
+        return 7;
+      case "Image":
+        return 8;
+      case "Slider":
+        return 9;
+      case "Likert Scale":
+        return 10;
+      case "Rating Scale":
+        return 11;
+      case "Matrix Question":
+        return 12;
+      case "Star Type Rating":
+        return 13;
+      case "Overall Experience":
+        return 14;
+      case "Text":
+        return 15;
+      default:
+        return 0;
+    }
+  }
+
+  /// map category string -> backend ID
+  int _mapCategoryNameToId(String category) {
+    switch (category) {
+      case "Mortgage":
+        return 1;
+      case "Real State":
+        return 2;
+      default:
+        return 0;
     }
   }
 
@@ -237,6 +330,56 @@ class QuestionBankController extends GetxController{
         snackPosition: SnackPosition.BOTTOM,
       );
       print("Failed to delete question → ${result?.message}");
+    }
+  }
+
+  /// map answer type ID -> string (for edit mode)
+  String mapAnswerTypeIdToName(int id) {
+    switch (id) {
+      case 1:
+        return "Boolean";
+      case 2:
+        return "Single Choice";
+      case 3:
+        return "Multiple Choice";
+      case 4:
+        return "Ranking";
+      case 5:
+        return "Date";
+      case 6:
+        return "Numeric";
+      case 7:
+        return "Integer";
+      case 8:
+        return "Image";
+      case 9:
+        return "Slider";
+      case 10:
+        return "Likert Scale";
+      case 11:
+        return "Rating Scale";
+      case 12:
+        return "Matrix Question";
+      case 13:
+        return "Star Type Rating";
+      case 14:
+        return "Overall Experience";
+      case 15:
+        return "Text";
+      default:
+        return "";
+    }
+  }
+
+  /// map category ID -> string (for edit mode)
+  String mapCategoryIdToName(int id) {
+    switch (id) {
+      case 1:
+        return "Mortgage";
+      case 2:
+        return "Real State";
+      default:
+        return "";
     }
   }
 
