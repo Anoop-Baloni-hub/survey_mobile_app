@@ -208,7 +208,6 @@ class QuestionBankController extends GetxController{
         if (response != null) {
           final index = questionList.indexWhere((q) => q.questionId == questionId);
           if (index != -1) {
-            // ✅ Update UI list directly
             questionList[index].questionText = body["questionText"]?.toString();
             questionList[index].answerTypeId = body["answerTypeId"] as int?;
             questionList[index].categories = categoryController.text;
@@ -225,7 +224,6 @@ class QuestionBankController extends GetxController{
         print("Create API Response → $response");
 
         if (response != null) {
-          // ✅ handle Map response
           if (response is Map<String, dynamic> && response["result"] != null) {
             final result = response["result"];
 
@@ -245,10 +243,10 @@ class QuestionBankController extends GetxController{
       }
 
       if (response != null) {
-        Get.snackbar("✅ Success", isEdit ? "Question updated" : "Question created");
+        Get.snackbar(" Success", isEdit ? "Question updated" : "Question created");
         return true;
       } else {
-        Get.snackbar("❌ Error", "Something went wrong");
+        Get.snackbar(" Error", "Something went wrong");
         return false;
       }
     } catch (e) {
@@ -383,4 +381,86 @@ class QuestionBankController extends GetxController{
     }
   }
 
+
+  Future<bool> submitAnswerChoiceGroup({bool isEdit = false, int? groupId}) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = "";
+
+      final body = {
+        "answerChoiceGroupId": isEdit ? (groupId ?? 0) : 0,
+        "answerChoiceGroupName": answerTextController.text.trim(),
+        "isActive": true,
+        "createdBy": "admin",
+        "updatedBy": "admin",
+        "answerChoiceModel": [
+          {
+            "answerChoiceId": isEdit ? 1 : 0,
+            "answerChoiceName": answerTextController.text.trim(),
+          }
+        ],
+        "categoryModel": [
+          {"categoryId": 1}
+        ]
+      };
+
+      print("📤 Sending Body → $body");
+
+      dynamic response;
+      if (isEdit) {
+        response = await questionRepo.updateAnswerChoiceGroup(groupId ?? 0, body);
+        print("📥 Update Response → $response");
+
+        if (response != null) {
+          final index = answerList.indexWhere((a) => a.answerChoiceGroupId == groupId);
+          if (index != -1) {
+            answerList[index].answerChoiceGroupName =
+                body["answerChoiceGroupName"].toString();
+          }
+          answerList.refresh();
+        }
+      } else {
+        response = await questionRepo.createAnswerChoiceGroup(body);
+        print("📥 Create Response → $response");
+
+        if (response != null && response.result != null) {
+          final newGroup = AnswerGroupResponseModel(
+            answerChoiceGroupId: response.result,
+            answerChoiceGroupName: body["answerChoiceGroupName"].toString(),
+            categories: "Category 1",
+            totalCount: (body["answerChoiceModel"] as List?)?.length ?? 0,
+          );
+          // answerList.add(newGroup);
+          // filteredAnswerList.clear();
+          // filteredAnswerList.addAll(answerList);
+          // filteredAnswerList.refresh();
+          // answerTextController.clear();
+          // answerOptionsControllers.clear();
+
+          answerList.add(newGroup);
+          answerList.refresh();
+          answerTextController.clear();
+          answerOptionsControllers.clear();
+        }
+      }
+
+      if (response != null) {
+        Get.snackbar("Success", isEdit ? "Answer choice updated" : "Answer choice created");
+        return true;
+      } else {
+        Get.snackbar("Error", "Something went wrong");
+        return false;
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+      print("❌ Exception → $e");
+      Get.snackbar("Error", "Submit failed: $e");
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
 }
+

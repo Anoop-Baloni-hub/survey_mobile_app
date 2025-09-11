@@ -82,3 +82,17 @@ class AnswerGroupResponseModel {
     return data;
   }
 }
+
+class SubmitAnswerChoiceModel {
+  final int? result;
+  final String? message;
+
+  SubmitAnswerChoiceModel({this.result, this.message});
+
+  factory SubmitAnswerChoiceModel.fromJson(Map<String, dynamic> json) {
+    return SubmitAnswerChoiceModel(
+      result: json['result'],
+      message: json['message'],
+    );
+  }
+}

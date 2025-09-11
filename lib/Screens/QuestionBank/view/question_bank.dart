@@ -17,6 +17,7 @@ import '../../../common/common_flex.dart';
 import '../../../common/common_textfield.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_image.dart';
+import '../viewModel/AnswerList.dart';
 import '../viewModel/questionList.dart';
 
 class QuestionBank extends GetView<QuestionBankController> {
@@ -171,7 +172,7 @@ class QuestionBank extends GetView<QuestionBankController> {
                   if (controller.selectedIndex.value == 0) {
                     showAddQuestionDialog(context, isEdit: false);
                   } else if (controller.selectedIndex.value == 1) {
-                    showAddAnswerChoiceDialog(context);
+                    showAddAnswerChoiceDialog(context,isEdit: false);
                   }
                 },
                 child: Column(
@@ -244,14 +245,14 @@ class QuestionBank extends GetView<QuestionBankController> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (controller.errorMessage.value.isNotEmpty) {
                   return Center(child: Text(controller.errorMessage.value));
-                } else if (controller.filteredAnswerList.isEmpty) {
+                } else if (controller.answerList.isEmpty) {
                   return const Center(child: Text("No Answer Groups Found"));
                 }
 
                 return ListView.builder(
-                  itemCount: controller.filteredAnswerList.length,
+                  itemCount: controller.answerList.length,
                   itemBuilder: (context, index) {
-                    final item = controller.filteredAnswerList[index];
+                    final item = controller.answerList[index];
                     return Padding(
                       padding: EdgeInsets.only(bottom: 12.h),
                       child: ActionItemCard(
@@ -261,7 +262,9 @@ class QuestionBank extends GetView<QuestionBankController> {
                           {"label": "Category", "value": item.categories ?? ""},
                           {"label": "Modified on", "value": item.modifiedOn ?? ""},
                         ],
-                        onEdit: () => showAddQuestionDialog(context),
+                        onEdit: () => showAddAnswerChoiceDialog(
+                          context,isEdit: true,
+                            answer : item),
                         onCopy: () {},
                         onDelete: () => showDeleteDialog(context, item.answerChoiceGroupId!),
                       ),
@@ -287,17 +290,11 @@ void showAddQuestionDialog(
   final controller = Get.find<QuestionBankController>();
 
   if (isEdit && question != null) {
-    // ✅ Prefill text
     controller.textController.text = question.questionText ?? "";
-
-    // ✅ Prefill dropdown
     controller.selectedOption.value =
         controller.mapAnswerTypeIdToName(question.answerTypeId ?? 0);
 
-    // ✅ Reset all categories first
     controller.categoryList.updateAll((key, value) => false);
-
-    // ✅ Prefill categories if available
     if (question.categories != null && question.categories!.isNotEmpty) {
       final selectedCats =
       question.categories!.split(",").map((e) => e.trim()).toList();
@@ -310,14 +307,11 @@ void showAddQuestionDialog(
     } else {
       controller.categoryController.clear();
     }
-
-    // ✅ Prefill min/max characters
     controller.minController.text =
         question.minimumCharacter?.toString() ?? "";
     controller.maxController.text =
         question.maximumCharacter?.toString() ?? "";
   } else {
-    // ✅ Clear fields when adding
     controller.textController.clear();
     controller.selectedOption.value = "";
     controller.categoryController.clear();
@@ -471,7 +465,6 @@ void showAddQuestionDialog(
   );
 }
 
-
 void showDeleteDialog(BuildContext context, int questionId) {
   final controller = Get.find<QuestionBankController>();
   showDialog(
@@ -512,9 +505,30 @@ void showDeleteDialog(BuildContext context, int questionId) {
   );
 }
 
-void showAddAnswerChoiceDialog(BuildContext context) {
+void showAddAnswerChoiceDialog(BuildContext context , {
+bool isEdit = false,
+  AnswerGroupResponseModel? answer,
+}) {
   final controller = Get.find<QuestionBankController>();
-  controller.answerOptionsControllers.clear();
+
+  if (isEdit && answer != null) {
+    controller.answerTextController.text = answer.answerChoiceGroupName ?? "";
+    controller.categoryList.updateAll((key, value) => false);
+    if (answer.categories != null && answer.categories!.isNotEmpty) {
+      final selectedCats =
+      answer.categories!.split(",").map((e) => e.trim()).toList();
+      for (var key in controller.categoryList.keys) {
+        controller.categoryList[key] = selectedCats.contains(key);
+      }
+      controller.categoryController.text = selectedCats.join(", ");
+    } else {
+      controller.categoryController.clear();
+    }
+  } else {
+    controller.answerTextController.clear();
+    controller.categoryController.clear();
+    controller.categoryList.updateAll((key, value) => false);
+  }
   showDialog(
     context: context,
     builder: (context) {
@@ -649,9 +663,15 @@ void showAddAnswerChoiceDialog(BuildContext context) {
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: () {
-              print("Answer choice group submitted: ${controller.textController.text}");
-              Navigator.pop(context);
+            onPressed: ()async {
+              print("Answer choice group submitted: ${controller.answerTextController.text}");
+                 final success = await controller.submitAnswerChoiceGroup(
+               isEdit: isEdit,
+            groupId: answer?.answerChoiceGroupId,
+             );
+            if (success && context.mounted) {
+           Navigator.pop(context);
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColor.primaryColor),
             child: Text(
