@@ -26,7 +26,6 @@ class QuestionBank extends GetView<QuestionBankController> {
   @override
   Widget build(BuildContext context) {
      final _scaffoldKey = GlobalKey<ScaffoldState>();
-
     return AppShell(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -234,7 +233,12 @@ class QuestionBank extends GetView<QuestionBankController> {
                           question: item,
                         ),
                         onCopy: () {},
-                        onDelete: () => showDeleteDialog(context, item.questionId!),
+                        onDelete: () =>showDeleteDialog(
+                          context: context,
+                          type: "Question",
+                          id: item.questionId!,
+                          onDelete: controller.deleteQuestion,
+                        ),
 
                       ),
                     );
@@ -266,7 +270,11 @@ class QuestionBank extends GetView<QuestionBankController> {
                           context,isEdit: true,
                             answer : item),
                         onCopy: () {},
-                        onDelete: () => showDeleteDialog(context, item.answerChoiceGroupId!),
+                        onDelete: () => showDeleteDialog(
+                          context: context,
+                          type: "Answer",
+                          id: item.answerChoiceGroupId!,
+                          onDelete: controller.deleteAnswer,),
                       ),
                     );
                   },
@@ -465,8 +473,53 @@ void showAddQuestionDialog(
   );
 }
 
-void showDeleteDialog(BuildContext context, int questionId) {
-  final controller = Get.find<QuestionBankController>();
+// void showDeleteDialog(BuildContext context, int questionId) {
+//   final controller = Get.find<QuestionBankController>();
+//   showDialog(
+//     context: context,
+//     builder: (context) {
+//       return AlertDialog(
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(10.r),
+//         ),
+//         title: Text(
+//           "Delete Campaign",
+//           style: AppTextStyle.bold14(AppColor.blackColor),
+//         ),
+//         content: Text(
+//           "Are you sure you want to delete this Campaign? This process can't be undone",
+//           style: AppTextStyle.medium14(AppColor.blackColor),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () {
+//               Navigator.pop(context);
+//             },
+//             child: const Text("Cancel"),
+//           ),
+//           ElevatedButton(
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: AppColor.primaryColor,
+//             ),
+//             onPressed: () {
+//               controller.deleteQuestion(questionId);
+//               controller.deleteAnswer(questionId);
+//               Navigator.pop(context);
+//             },
+//             child: const Text("Delete"),
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
+
+void showDeleteDialog({
+  required BuildContext context,
+  required String type,
+  required int id,
+  required Future<void> Function(int id) onDelete,
+}) {
   showDialog(
     context: context,
     builder: (context) {
@@ -475,27 +528,25 @@ void showDeleteDialog(BuildContext context, int questionId) {
           borderRadius: BorderRadius.circular(10.r),
         ),
         title: Text(
-          "Delete Campaign",
+          "Delete $type",
           style: AppTextStyle.bold14(AppColor.blackColor),
         ),
         content: Text(
-          "Are you sure you want to delete this Campaign? This process can't be undone",
+          "Are you sure you want to delete this $type? This process can't be undone",
           style: AppTextStyle.medium14(AppColor.blackColor),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text("Cancel"),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColor.primaryColor,
             ),
-            onPressed: () {
-              controller.deleteQuestion(questionId);
+            onPressed: () async {
               Navigator.pop(context);
+              await onDelete(id);
             },
             child: const Text("Delete"),
           ),

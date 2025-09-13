@@ -31,15 +31,45 @@ class QuestionRepository {
         isAuthRequired: true,
       );
 
+      if (response == null) {
+        print("Delete API Response is null");
+        return null;
+      }
 
       final Map<String, dynamic> data =
-      response is Map<String, dynamic> ? response : response.data;
+      response is Map<String, dynamic> ? response : (response.data ?? {});
 
-      print("Delete API Response → $data"); // Debugging
+      print("Delete API Response → $data");
 
       return SubmitQuestionModel.fromJson(data);
-    } catch (e) {
+    } catch (e, stack) {
       print("deleteQuestion error: $e");
+      print(stack);
+      return null;
+    }
+  }
+
+  Future<SubmitAnswerChoiceModel?> deleteAnswer(int answerId) async {
+    try {
+      final response = await _client.delete(
+        url: "${ApiUrl.answerChoiceList}/$answerId",
+        isAuthRequired: true,
+      );
+
+      if (response == null) {
+        print("Delete API Response is null");
+        return null;
+      }
+
+      final Map<String, dynamic> data =
+      response is Map<String, dynamic> ? response : (response.data ?? {});
+
+      print("Delete API Response → $data");
+
+      return SubmitAnswerChoiceModel.fromJson(data);
+    } catch (e, stack) {
+      print("deleteAnswer error: $e");
+      print(stack);
       return null;
     }
   }

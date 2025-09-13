@@ -7,5 +7,5 @@ import 'package:survey_app/Screens/Users/controllers/userController.dart';
 class UsersBinding extends Bindings {
   @override
   void dependencies() =>
-      Get.lazyPut<Usercontroller>(() => Usercontroller());
+      Get.lazyPut<UserController>(() => UserController());
 }

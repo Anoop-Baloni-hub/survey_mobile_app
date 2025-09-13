@@ -331,6 +331,29 @@ class QuestionBankController extends GetxController{
     }
   }
 
+  Future<void> deleteAnswer(int answerId) async {
+    final result = await questionRepo.deleteAnswer(answerId);
+
+    if (result != null && result.message?.toLowerCase().contains("success") == true) {
+      answerList.removeWhere((q) => q.answerChoiceGroupId == answerId);
+      filteredAnswerList.removeWhere((q) => q.answerChoiceGroupId == answerId);
+      update();
+      Get.snackbar(
+        "Success",
+        result.message ?? "Answer deleted successfully",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      print("Deleted Answer → ${result.message}");
+    } else {
+      Get.snackbar(
+        "Error",
+        result?.message ?? "Failed to delete Answer",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      print("Failed to delete Answer → ${result?.message}");
+    }
+  }
+
   /// map answer type ID -> string (for edit mode)
   String mapAnswerTypeIdToName(int id) {
     switch (id) {
@@ -453,7 +476,7 @@ class QuestionBankController extends GetxController{
       }
     } catch (e) {
       errorMessage.value = e.toString();
-      print("❌ Exception → $e");
+      print(" Exception → $e");
       Get.snackbar("Error", "Submit failed: $e");
       return false;
     } finally {
