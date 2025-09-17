@@ -96,3 +96,19 @@ class SubmitAnswerChoiceModel {
     );
   }
 }
+
+
+class AnswerType {
+  final int id;
+  final String name;
+
+  AnswerType({required this.id, required this.name});
+
+  factory AnswerType.fromJson(Map<String, dynamic> json) {
+    return AnswerType(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+}
+

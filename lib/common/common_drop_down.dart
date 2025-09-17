@@ -24,7 +24,7 @@ class CommonDropdownButton<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
       isExpanded: isExpanded ?? true,
-      value: items.any((item) => item.value == value) ? value : null,
+      value: value,
       items: items,
       onChanged: onChanged,
       decoration: InputDecoration(

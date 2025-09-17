@@ -12,14 +12,13 @@ import '../../../common/common_flex.dart';
 import '../../../common/common_textfield.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_text_style.dart';
+import '../models/survey_model.dart';
 
 class CreateNewSurveyScreen extends GetView<NewSurveyController>{
   const CreateNewSurveyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // final _scaffoldKey = GlobalKey<ScaffoldState>();
-    //   final formKey = GlobalKey<FormState>();
     return AppShell(
         child: SingleChildScrollView(
           child: Column(
@@ -199,6 +198,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
     return Column(
       children: [
         TextField(
+          controller: controller.surveyNameController,
           decoration: InputDecoration(
             label: RichText(
               text: TextSpan(
@@ -227,7 +227,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
 
         h(20),
         CustomTextInput(
-          textEditController: controller.surveyTextController,
+          textEditController: controller.surveyDesController,
           hintTextString: 'Survey Description',
           maxLines: 8,
         ),
@@ -321,7 +321,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
 
                 OutlinedButton(
                   onPressed: () {
-                    controller.selectedButtonIndex.value = 0; // set selected
+                    controller.selectedButtonIndex.value = 0;
                   },
                   style: OutlinedButton.styleFrom(
                     backgroundColor: controller.selectedButtonIndex.value == 0
@@ -330,7 +330,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                     foregroundColor: controller.selectedButtonIndex.value == 0
                         ? AppColor.whiteColor
                         : AppColor.primaryColor,
-                    side: BorderSide(color: AppColor.primaryColor),
+                    side: const BorderSide(color: AppColor.primaryColor),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
@@ -346,22 +346,56 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                 ),
 
                 h(15),
+                // Obx(() {
+                //   return OutlinedButton(
+                //     onPressed: () async {
+                //       controller.selectedButtonIndex.value = 1;
+                //       await controller.fetchAnswers(1);
+                //       final questionsList = controller.questions
+                //           .map((q) => q.questionText)
+                //           .toList();
+                //       showQuestionBankDialog(context, controller, questionsList);
+                //     },
+                //     style: OutlinedButton.styleFrom(
+                //       backgroundColor: controller.selectedButtonIndex.value == 1
+                //           ? AppColor.primaryColor
+                //           : AppColor.transparentColor,
+                //       foregroundColor: controller.selectedButtonIndex.value == 1
+                //           ? AppColor.whiteColor
+                //           : AppColor.primaryColor,
+                //       side: const BorderSide(color: AppColor.primaryColor),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(8.r),
+                //       ),
+                //     ),
+                //     child: Text(
+                //       'Add From Questionnaire',
+                //       style: AppTextStyle.semiBold14(
+                //         controller.selectedButtonIndex.value == 1
+                //             ? AppColor.whiteColor
+                //             : AppColor.primaryColor,
+                //       ),
+                //     ),
+                //   );
+                // }),
+
                 Obx(() {
                   return OutlinedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       controller.selectedButtonIndex.value = 1;
-                      showQuestionBankDialog(context,controller, [
-                        "37 Name must be greater than",
-                        "39 Name must be greater than",
-                        "40 Name must be greater than",
-                        "41 Name must be greater than",
-                        "42 Name must be greater than",
-                        "44 Name must be greater than",
-                        "50 Name must be greater than",
-                        "51 Name must be greater than",
-                        "52 Name must be greater than -- Clone",
-                        "55 Name must be greater than -- Clone"
-                      ]);
+                      await controller.fetchQuestions(1);
+
+                      final questionsList =
+                      controller.questions.map((q) => q.questionText).toList();
+
+                      showQuestionBankDialog(
+                        context,
+                        controller,
+                        questionsList,
+                        onSelected: (selected) {
+                          controller.selectedQuestions.assignAll(selected);
+                        },
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       backgroundColor: controller.selectedButtonIndex.value == 1
@@ -394,103 +428,115 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
 
         ),
         h(20),
-        Container(
-         // height: MediaQuery.of(context).size.height/5,
-          width: MediaQuery.of(context).size.width*0.9,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.r),
-              color: AppColor.cardColor,
-              border: Border.all(
-             color: AppColor.lightGreyColor
-   )
-          ),
-          child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 10.w),
-            child: Column(
-              children: [
-                h(20),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Question 1',
-                  style: AppTextStyle.semiBold14(AppColor.greyColor)),
-                ),
-                h(10),
-                TextField(
-                  decoration: InputDecoration(
-                    label: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Enter Question Here ',
-                            style: AppTextStyle.semiBold12(AppColor.blackColor),
+        Obx(() {
+          if (controller.selectedButtonIndex.value == 1 &&
+              controller.selectedQuestions.isNotEmpty) {
+            return Column(
+              children: List.generate(controller.selectedQuestions.length, (index) {
+                final question = controller.selectedQuestions[index];
+                return Container(
+                  margin: EdgeInsets.only(bottom: 15.h),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    color: AppColor.cardColor,
+                    border: Border.all(color: AppColor.lightGreyColor),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: Column(
+                      children: [
+                        h(20),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Question ${index + 1}',
+                              style: AppTextStyle.semiBold14(AppColor.greyColor)),
+                        ),
+                        h(10),
+                        TextField(
+                          controller: TextEditingController(text: question),
+                          decoration: InputDecoration(
+                            labelText: "Enter Question Here *",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
                           ),
-                          TextSpan(
-                            text: '*',
-                            style: AppTextStyle.semiBold12(AppColor.redColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        h(15),
+
+                        Obx(() {
+                          if (controller.optionsList.isEmpty && !controller.isLoading.value) {
+                            controller.fetchAnswerTypes();
+                          }
+                          if (controller.isLoading.value) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+
+                          return CommonDropdownButton<String>(
+                            hintText: 'Select Answer Type',
+                            value: controller.selectedOption.value.isEmpty
+                                ? null
+                                : controller.selectedOption.value,
+                            items: controller.optionsList
+                                .map((option) => DropdownMenuItem<String>(
+                              value: option,
+                              child: Text(option),
+                            ))
+                                .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                controller.selectedOption.value = value;
+                              }
+                            },
+                          );
+                        }),
+
+
+                        h(15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Mark as mandatory",
+                                style: AppTextStyle.medium14(AppColor.greyColor)),
+                            Obx(() => Switch(
+                              value: controller.isMandatory.value,
+                              onChanged: (value) {
+                                controller.isMandatory.value = value;
+                              },
+                              activeColor: Colors.white,
+                              activeTrackColor: AppColor.blueColor,
+                              inactiveThumbColor: AppColor.blackColor,
+                              inactiveTrackColor: AppColor.whiteColor,
+                            )),
+                            spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                // copy logic
+                              },
+                              child: const Icon(Icons.copy,
+                                  size: 20, color: AppColor.blackColor),
+                            ),
+                            w(10),
+                            GestureDetector(
+                              onTap: () {
+                                controller.selectedQuestions.removeAt(index);
+                              },
+                              child: const Icon(Icons.delete,
+                                  size: 20, color: AppColor.blackColor),
+                            ),
+                          ],
+                        ),
+                        h(15),
+                      ],
                     ),
                   ),
-                ),
-                h(15),
-                TextField(
-                  decoration: InputDecoration(
-                    label: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Select Answer Type',
-                            style: AppTextStyle.semiBold12(AppColor.blackColor),
-                          ),
-                          TextSpan(
-                            text: '*',
-                            style: AppTextStyle.semiBold12(AppColor.redColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                ),
-                h(15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Mark as mandatory',
-                    style: AppTextStyle.medium14(AppColor.greyColor)),
-                  w(10),
-                  Obx(() => Switch(
-                    value: controller.isMandatory.value,
-                    onChanged: (value) {
-                      controller.isMandatory.value = value;
-                    },
-                    activeColor: Colors.white,
-                    activeTrackColor: AppColor.blueColor,
-                    inactiveThumbColor: AppColor.blackColor,
-                    inactiveTrackColor: AppColor.whiteColor,
-                  )),
-                  spacer(),
-                  GestureDetector(
-                    onTap: (){},
-                      child: const Icon(Icons.copy,size: 20,color: AppColor.blackColor)),
-                  w(10),
-                  GestureDetector(
-                      onTap: (){},
-                      child: const Icon(Icons.delete,size: 20,color: AppColor.blackColor)
-                  ),
-                ],
-              ),
-                h(15),
-              ],
-            ),
-          )
-        ),
+                );
+              }),
+            );
+          }
+          return SizedBox.shrink(); // nothing if no questions
+        }),
+
         h(20),
         Container(
           // height: MediaQuery.of(context).size.height/5,
@@ -838,7 +884,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                   color: AppColor.greyPurpleColor,
                   size: 20.sp,
                 ),
-                textEditController: controller.textController,
+                textEditController: controller.searchController,
                 hintTextString: "Type into Search",
                 borderColor: AppColor.borderColor,
                 inputType: InputType.defaults,
@@ -905,8 +951,9 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
   void showQuestionBankDialog(
       BuildContext context,
       NewSurveyController controller,
-      List<String> questions,
-      ) {
+      List<String> answers, {
+        void Function(List<String>)? onSelected,
+      }) {
     showDialog(
       context: context,
       builder: (_) {
@@ -927,7 +974,7 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                 SizedBox(
                   height: 300.h,
                   child: ListView.builder(
-                    itemCount: questions.length,
+                    itemCount: answers.length,
                     itemBuilder: (context, index) {
                       return Obx(() {
                         final isSelected = controller.selectedListIndexes.contains(index);
@@ -940,8 +987,8 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                               controller.selectedListIndexes.remove(index);
                             }
                           },
-                          title: Text(questions[index]),
-                          controlAffinity: ListTileControlAffinity.leading, // <-- checkbox first
+                          title: Text(answers[index]),
+                          controlAffinity: ListTileControlAffinity.leading,
                         );
                       });
                     },
@@ -959,8 +1006,15 @@ class CreateNewSurveyScreen extends GetView<NewSurveyController>{
                     Obx(() {
                       return ElevatedButton(
                         onPressed: controller.selectedListIndexes.isEmpty
-                            ? null: () {
-                          print("Selected: ${controller.selectedListIndexes.map((i) => questions[i]).toList()}");
+                            ? null
+                            : () {
+                          final selected = controller.selectedListIndexes
+                              .map((i) => answers[i])
+                              .toList();
+                          if (onSelected != null) {
+                            onSelected(selected);
+                          }
+
                           Navigator.pop(context);
                         },
                         child: Text("Add",style: AppTextStyle.semiBold14(AppColor.blackColor),),

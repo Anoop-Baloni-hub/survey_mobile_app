@@ -95,7 +95,7 @@ class CampaignScreen extends GetView<CampaignController>{
                             color: AppColor.greyPurpleColor,
                             size: 20.sp,
                           ),
-                          textEditController: controller.textController,
+                          textEditController: controller.searchController,
                           hintTextString: "Search Campaign",
                           borderColor: AppColor.borderColor,
                           inputType: InputType.defaults,
@@ -120,7 +120,6 @@ class CampaignScreen extends GetView<CampaignController>{
                                 return PopupMenuItem(
                                   value: option,
                                   child: Container(
-                                   // color:  AppColor.greyColor,
                                     padding:  EdgeInsets.symmetric(vertical: 6.h, horizontal: 8.w),
                                     child: Text(option, style:AppTextStyle.semiBold12(AppColor.blackColor)),
                                   ),
@@ -170,6 +169,7 @@ class CampaignScreen extends GetView<CampaignController>{
                       padding:  EdgeInsets.only(left: 14.w),
                       child:GestureDetector(
                         onTap: () {
+                          controller.prepareForAdd();
                           showDialog(
                               context: context,
                               builder: (context) {
@@ -278,26 +278,38 @@ class CampaignScreen extends GetView<CampaignController>{
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.pop(context); // Close popup
+                                        Navigator.pop(context);
                                       },
                                       child: const Text("Cancel"),
                                     ),
 
                                     ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () async {
                                         if (!controller.validateDates()) return;
-                                        String newChoice = controller.textController.text.trim();
-                                        if (newChoice.isNotEmpty) {
-                                          print("New Choice Group: $newChoice");
+                                        final isUpdate = controller.selectedCampaignId.value!= null;
+                                        final result = await controller.saveCampaign(
+                                          campaignId: controller.selectedCampaignId.value,
+                                        );
+
+                                        if (result != null) {
+                                          controller.resetForm();
+                                          Navigator.pop(context);
+                                        } else {
+                                          Get.snackbar(
+                                            "Error",
+                                            isUpdate ? "Failed to update campaign" : "Failed to create campaign",
+                                            backgroundColor: Colors.redAccent,
+                                            colorText: Colors.white,
+                                          );
                                         }
-                                        Navigator.pop(context); // Close popup
                                       },
                                       style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColor.primaryColor
+                                        backgroundColor: AppColor.primaryColor,
                                       ),
-                                      child:  Text("Create",
+                                      child: Obx(() => Text(
+                                        controller.selectedCampaignId.value != null ? "Update" : "Create",
                                         style: AppTextStyle.semiBold12(AppColor.whiteColor),
-                                      ),
+                                      )),
                                     ),
                                   ],
                                 );});
@@ -320,330 +332,339 @@ class CampaignScreen extends GetView<CampaignController>{
                       )
                   ),
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding:  EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
-                      child: Column(
-                        children: [
-                          Container(
-                            // height: MediaQuery.sizeOf(context).height,
-                             width: MediaQuery.sizeOf(context).width,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8.r),
-                              topRight: Radius.circular(8.r), ),
-                              color: AppColor.blueColor,
-                            ),
-                            child:  Padding(
-                              padding:  EdgeInsets.symmetric(vertical: 15.h,horizontal: 10.w),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Rize Mortgage Borrower',
-                                      style: AppTextStyle.semiBold14(AppColor.whiteColor)),
-                                  h(10),
-                                  Text('Experience Survey 1',
-                                      style: AppTextStyle.semiBold14(AppColor.whiteColor)),
 
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.sizeOf(context).width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(8.r),
-                                bottomRight: Radius.circular(8.r),
-                              ),
-                              color: AppColor.greyColor.withOpacity(0.1),
-                            ),
-                            child: Padding(
-                              padding:  EdgeInsets.symmetric(horizontal: 15.w,vertical: 10.h),
-                              child: Column(
-                                children: [
-                                  h(10),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                    children: [
-                                      Image.asset(AppImage.jam),
-                                      w(10),
-                                      Column(
-                                        crossAxisAlignment:CrossAxisAlignment.start,
-                                        children: [
-                                        Text('11',style: AppTextStyle.semiBold12(AppColor.blackColor)),
-                                        h(5),
-                                        Text('Total Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
-                                        ],
-                                      ),
-                                    ],
-                                      ),
-                                      Row(
-                                    children: [
-                                      Image.asset(AppImage.arrow1),
-                                      w(10),
-                                      Column(
-                                        crossAxisAlignment:CrossAxisAlignment.start,
-                                        children: [
-                                        Text('11',style: AppTextStyle.semiBold12(AppColor.blackColor)),
-                                          h(5),
-                                          Text('Active Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
-                                        ],
-                                      ),
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-
-                                    ],
-                                      ),
-                                    ],
-                                  ),
-                                  h(20),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                    children: [
-                                      Image.asset(AppImage.charmCircle),
-                                      w(10),
-                                      Column(
-                                        crossAxisAlignment:CrossAxisAlignment.start,
-                                        children: [
-                                        Text('11',style: AppTextStyle.semiBold12(AppColor.blackColor)),
-                                        h(5),
-                                        Text('Total Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
-                                        ],
-                                      ),
-                                    ],
-                                      ),
-
-                                      Row(
-                                    children: [
-                                      Image.asset(AppImage.mingcute),
-                                      w(10),
-                                      Column(
-                                        crossAxisAlignment:CrossAxisAlignment.start,
-                                        children: [
-                                        Text('11',style: AppTextStyle.semiBold12(AppColor.blackColor)),
-                                          h(5),
-                                        Text('Active Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
-                                        ],
-                                      ),
+              if (controller.filteredCampaigns.isEmpty) {
+                return const Center(child: Text("No campaigns found"));
+              }
+              return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: controller.filteredCampaigns.length,
+              itemBuilder: (context, index) {
+              final campaign = controller.filteredCampaigns[index];
+              return Padding(
+              padding:  EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+              child: Column(
+              children: [
+              Container(
+              // height: MediaQuery.sizeOf(context).height,
+              width: MediaQuery.sizeOf(context).width,
+              decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(8.r),
+              topRight: Radius.circular(8.r), ),
+              color: AppColor.blueColor,
+              ),
+              child:  Padding(
+              padding:  EdgeInsets.symmetric(vertical: 15.h,horizontal: 10.w),
+              child: Text( campaign.campaignName,
+              style: AppTextStyle.semiBold14(AppColor.whiteColor)),
+              ),
+              ),
+              Container(
+              width: MediaQuery.sizeOf(context).width,
+              decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(8.r),
+              bottomRight: Radius.circular(8.r),
+              ),
+              color: AppColor.greyColor.withOpacity(0.1),
+              ),
+              child: Padding(
+              padding:  EdgeInsets.symmetric(horizontal: 15.w,vertical: 10.h),
+              child: Column(
+              children: [
+              h(10),
+              Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Row(
+              children: [
+              Image.asset(AppImage.jam),
+              w(10),
+              Column(
+              crossAxisAlignment:CrossAxisAlignment.start,
+              children: [
+              Text( "${campaign.totalSurveys}",style: AppTextStyle.semiBold12(AppColor.blackColor)),
+              h(5),
+              Text('Total Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
+              ],
+              ),
+              ],
+              ),
+              Row(
+              children: [
+              Image.asset(AppImage.arrow1),
+              w(10),
+              Column(
+              crossAxisAlignment:CrossAxisAlignment.start,
+              children: [
+              Text( "${campaign.activeSurveys}",style: AppTextStyle.semiBold12(AppColor.blackColor)),
+              h(5),
+              Text('Active Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
+              ],
+              ),
 
 
-                                    ],
-                                      ),
+              ],
+              ),
+              ],
+              ),
+              h(20),
+              Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Row(
+              children: [
+              Image.asset(AppImage.charmCircle),
+              w(10),
+              Column(
+              crossAxisAlignment:CrossAxisAlignment.start,
+              children: [
+              Text("${campaign.inactiveSurveys}",style: AppTextStyle.semiBold12(AppColor.blackColor)),
+              h(5),
+              Text('InActive Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
+              ],
+              ),
+              ],
+              ),
 
-                                    ],
-                                  ),
-                                  h(20),
-                                 Row(
-                                   mainAxisAlignment: MainAxisAlignment.start,
-                                   children: [
-                                     GestureDetector(
-                                       onTap:(){
-                                         showDialog(
-                                             context: context,
-                                             builder: (context) {
-                                               return AlertDialog(
-                                                 shape: RoundedRectangleBorder(
-                                                   borderRadius: BorderRadius.circular(10.r),
-                                                 ),
-                                                 title: Text("Edit Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
-                                                 content: SizedBox(
-                                                   width: MediaQuery.of(context).size.width * 1.w,
-                                                   child: Form(
-                                                     key: formKey,
-                                                     child: Column(
-                                                       mainAxisSize: MainAxisSize.min,
-                                                       children: [
-                                                         CustomTextInput(
-                                                           textEditController: controller.textController,
-                                                           hintTextString: 'Enter Campaign Name',
-                                                           validator: (value) =>
-                                                           value == null || value.isEmpty ? "Campaign Name is required" : null,
-                                                         ),
-                                                         h(20),
-                                                         TextField(
-                                                           controller: controller.startDateController,
-                                                           readOnly: true,
-                                                           decoration: InputDecoration(
-                                                             labelText: "Start Date",
-                                                             suffixIcon: const Icon(Icons.calendar_today_outlined),
-                                                             border: OutlineInputBorder(
-                                                               borderRadius: BorderRadius.circular(8.r),
-                                                             ),
-                                                           ),
-                                                           onTap: () => controller.pickStartDate(context),
-                                                         ),
-                                                         h(20),
-                                                         TextField(
-                                                           controller: controller.endDateController,
-                                                           readOnly: true,
-                                                           decoration: InputDecoration(
-                                                             labelText: "End Date",
-                                                             suffixIcon: const Icon(Icons.calendar_today_outlined),
-                                                             border: OutlineInputBorder(
-                                                               borderRadius: BorderRadius.circular(8.r),
-                                                             ),
-                                                           ),
-                                                           onTap: () => controller.pickEndDate(context),
-                                                         ),
-                                                         h(20),
-                                                         TextField(
-                                                           controller: controller.categoryController,
-                                                           readOnly: true,
-                                                           decoration: InputDecoration(
-                                                             labelText: "Select Category",
-                                                             suffixIcon: const Icon(Icons.arrow_drop_down),
-                                                             border: OutlineInputBorder(
-                                                               borderRadius: BorderRadius.circular(8.r),
-                                                             ),
-                                                           ),
-                                                           onTap: () {
-                                                             showDialog(
-                                                               context: context,
-                                                               builder: (_) => AlertDialog(
-                                                                 title: const Text("Select Categories"),
-                                                                 content: Obx(() => SingleChildScrollView(
-                                                                   child: Column(
-                                                                     mainAxisSize: MainAxisSize.min,
-                                                                     children: controller.categoryList.keys.map((category) {
-                                                                       return CheckboxListTile(
-                                                                         title: Text(category),
-                                                                         value: controller.categoryList[category],
-                                                                         onChanged: (val) {
-                                                                           controller.categoryList[category] = val ?? false;
-                                                                         },
-                                                                       );
-                                                                     }).toList(),
-                                                                   ),
-                                                                 )),
-                                                                 actions: [
-                                                                   TextButton(
-                                                                     onPressed: () => Navigator.pop(context),
-                                                                     child: const Text("Cancel"),
-                                                                   ),
-                                                                   ElevatedButton(
-                                                                     onPressed: () {
-                                                                       final selected = controller.categoryList.entries
-                                                                           .where((e) => e.value)
-                                                                           .map((e) => e.key)
-                                                                           .toList();
+              Row(
+              children: [
+              Image.asset(AppImage.mingcute),
+              w(10),
+              Column(
+              crossAxisAlignment:CrossAxisAlignment.start,
+              children: [
+              Text("${campaign.draftedSurveys}",style: AppTextStyle.semiBold12(AppColor.blackColor)),
+              h(5),
+              Text('Drafted Surveys',style: AppTextStyle.semiBold12(AppColor.blackColor))
+              ],
+              ),
+              ],
+              ),
+              ],
+              ),
+              h(20),
+              Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+              GestureDetector(
+              onTap:(){
+                controller.prepareForEdit(campaign);
+              showDialog(
+              context: context,
+              builder: (context) {
+              return AlertDialog(
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+              ),
+              title: Text("Edit Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+              content: SizedBox(
+              width: MediaQuery.of(context).size.width * 1.w,
+              child: Form(
+              key: formKey,
+              child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+              CustomTextInput(
+              textEditController: controller.textController,
+              hintTextString: 'Enter Campaign Name',
+              validator: (value) =>
+              value == null || value.isEmpty ? "Campaign Name is required" : null,
+              ),
+              h(20),
+              TextField(
+              controller: controller.startDateController,
+              readOnly: true,
+              decoration: InputDecoration(
+              labelText: "Start Date",
+              suffixIcon: const Icon(Icons.calendar_today_outlined),
+              border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              ),
+              ),
+              onTap: () => controller.pickStartDate(context),
+              ),
+              h(20),
+              TextField(
+              controller: controller.endDateController,
+              readOnly: true,
+              decoration: InputDecoration(
+              labelText: "End Date",
+              suffixIcon: const Icon(Icons.calendar_today_outlined),
+              border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              ),
+              ),
+              onTap: () => controller.pickEndDate(context),
+              ),
+              h(20),
+              TextField(
+              controller: controller.categoryController,
+              readOnly: true,
+              decoration: InputDecoration(
+              labelText: "Select Category",
+              suffixIcon: const Icon(Icons.arrow_drop_down),
+              border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.r),
+              ),
+              ),
+              onTap: () {
+              showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+              title: const Text("Select Categories"),
+              content: Obx(() => SingleChildScrollView(
+              child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: controller.categoryList.keys.map((category) {
+              return CheckboxListTile(
+              title: Text(category),
+              value: controller.categoryList[category],
+              onChanged: (val) {
+              controller.categoryList[category] = val ?? false;
+              },
+              );
+              }).toList(),
+              ),
+              )),
+              actions: [
+              TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+              onPressed: () {
+              final selected = controller.categoryList.entries
+                  .where((e) => e.value)
+                  .map((e) => e.key)
+                  .toList();
 
-                                                                       controller.categoryController.text = selected.join(", ");
-                                                                       Navigator.pop(context);
-                                                                     },
-                                                                     child: const Text("OK"),
-                                                                   )
-                                                                 ],
-                                                               ),
-                                                             );
-                                                           },
-                                                         ),
-                                                         h(10),
-                                                       ],
-                                                     ),
-                                                   ),
-                                                 ),
-                                                 actions: [
-                                                   TextButton(
-                                                     onPressed: () {
-                                                       Navigator.pop(context); // Close popup
-                                                     },
-                                                     child: const Text("Cancel"),
-                                                   ),
+              controller.categoryController.text = selected.join(", ");
+              Navigator.pop(context);
+              },
+              child: const Text("OK"),
+              )
+              ],
+              ),
+              );
+              },
+              ),
+              h(10),
+              ],
+              ),
+              ),
+              ),
+              actions: [
+              TextButton(
+              onPressed: () {
+              Navigator.pop(context); // Close popup
+              },
+              child: const Text("Cancel"),
+              ),
 
-                                                   ElevatedButton(
-                                                     onPressed: () {
-                                                       if (!controller.validateDates()) return;
-                                                       String newChoice = controller.textController.text.trim();
-                                                       if (newChoice.isNotEmpty) {
-                                                         print("New Choice Group: $newChoice");
-                                                       }
-                                                       Navigator.pop(context); // Close popup
-                                                     },
-                                                     style: ElevatedButton.styleFrom(
-                                                         backgroundColor: AppColor.primaryColor
-                                                     ),
-                                                     child:  Text("Create",
-                                                       style: AppTextStyle.semiBold12(AppColor.whiteColor),
-                                                     ),
-                                                   ),
-                                                 ],
-                                               );});
-                                       },
-                                         child: const Icon(Icons.edit,size: 20)),
-                                     w(20),
-                                     GestureDetector(
-                                         onTap:(){},
-                                         child: const Icon(Icons.copy,size: 20)),
-                                     w(20),
-                                     GestureDetector(
-                                         onTap:(){
-                                           showDialog(context: context,
-                                               builder: (context){
-                                             return AlertDialog(
-                                               shape: RoundedRectangleBorder(
-                                                 borderRadius: BorderRadius.circular(10.r),
-                                               ),
-                                               title: Text("Delete Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
-                                               content: Text('''Are you sure , you want to delete this Campaign? This process can't be undone''',
-                                                 style: AppTextStyle.medium14(AppColor.blackColor),
-                                               ),
-                                               actions: [
-                                                 TextButton(
-                                                   onPressed: () {
-                                                     Navigator.pop(context);
-                                                   },
-                                                   child: const Text("Cancel"),
-                                                 ),
-                                                 ElevatedButton(
-                                                   style: ElevatedButton.styleFrom(
-                                                     backgroundColor: AppColor.primaryColor,
-                                                   ),
-                                                   onPressed: () {
-                                                     controller.deleteCampaign();
-                                                     Navigator.pop(context);
-                                                   },
-                                                   child: const Text("Delete"),
-                                                 ),
-                                               ],
-                                             );
-                                               }
-                                           );
-                                         },
-                                         child: const Icon(Icons.delete,size: 20)),
-                                     Expanded(
-                                       child: Row(
-                                         mainAxisAlignment: MainAxisAlignment.end,
+                ElevatedButton(
+                  onPressed: () async {
+                    if (!controller.validateDates()) return;
 
-                                         children: [
-                                           GestureDetector(
-                                               onTap:(){
-                                                 Get.toNamed(Routes.campaignDashBoard);
-                                               },
-                                               child: Text('View More',style: AppTextStyle.semiBold14(AppColor.saffronColor))),
-                                           const Icon(Icons.arrow_forward_ios,size: 18,color: AppColor.saffronColor,)
-                                         ],
-                                       ),
-                                     )
-                                   ],
-                                 ),
-                                  h(10),
-
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                    final result = await controller.saveCampaign(
+                      campaignId: controller.selectedCampaignId.value, // pass ID here
                     );
+
+                    if (result != null) {
+                      controller.resetForm();
+                      Navigator.pop(context);
+                    } else {
+                      Get.snackbar("Error", "Failed to update campaign",
+                          backgroundColor: Colors.redAccent, colorText: Colors.white);
+                    }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.primaryColor,
+                  ),
+                  child: Obx(() => Text(
+                    controller.selectedCampaignId.value != null ? "Update" : "Create",
+                    style: AppTextStyle.semiBold12(AppColor.whiteColor),
+                  )),
+                ),
+
+              ],
+              );});
+              },
+              child: const Icon(Icons.edit,size: 20)),
+              w(20),
+              GestureDetector(
+              onTap:(){},
+              child: const Icon(Icons.copy,size: 20)),
+              w(20),
+              GestureDetector(
+              onTap:(){
+              showDialog(context: context,
+              builder: (context){
+              return AlertDialog(
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+              ),
+              title: Text("Delete Campaign",style: AppTextStyle.bold14(AppColor.blackColor),),
+              content: Text('''Are you sure , you want to delete this Campaign? This process can't be undone''',
+              style: AppTextStyle.medium14(AppColor.blackColor),
+              ),
+              actions: [
+              TextButton(
+              onPressed: () {
+              Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+              style: ElevatedButton.styleFrom(
+              backgroundColor: AppColor.primaryColor,
+              ),
+              onPressed: () {
+              controller.deleteCampaign(campaign.campaignId);
+              Navigator.pop(context);
+              },
+              child: const Text("Delete"),
+              ),
+              ],
+              );
+              }
+              );
+              },
+              child: const Icon(Icons.delete,size: 20)),
+              Expanded(
+              child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+
+              children: [
+              GestureDetector(
+              onTap:(){
+              Get.toNamed(Routes.campaignDashBoard);
+              },
+              child: Text('View More',style: AppTextStyle.semiBold14(AppColor.saffronColor))),
+              const Icon(Icons.arrow_forward_ios,size: 18,color: AppColor.saffronColor,)
+              ],
+              ),
+              )
+              ],
+              ),
+              h(10),
+              ],
+              ),
+              ),
+              )
+              ],
+              ),
+              );
+              },
+              );
+            }
                 )
           ]
           ),

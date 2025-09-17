@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:survey_app/Screens/Users/controllers/userController.dart';
@@ -269,7 +271,7 @@ class UserScreen extends GetView<UserController> {
                                       }),
                                       h(20),
                                       CustomTextInput(
-                                        textEditController: controller.phoneController,
+                                        textEditController: controller.defaultController,
                                         hintTextString: 'Default Survey',
                                       ),
                                     ],
@@ -279,25 +281,41 @@ class UserScreen extends GetView<UserController> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context); // Close popup
+                                    Navigator.pop(context);
                                   },
                                   child: const Text("Cancel"),
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (formKey1.currentState!.validate()) {
+                                      final result = await controller.createUser();
 
-                                      Navigator.pop(context);
+                                      if (result != null && result.success) {
+                                        controller.resetForm();
+                                        Navigator.pop(context);
+                                      } else {
+                                        Get.snackbar(
+                                          "Error",
+                                          "Failed to invite user",
+                                          backgroundColor: Colors.redAccent,
+                                          colorText: Colors.white,
+                                        );
+                                      }
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      side: BorderSide(color:AppColor.blackColor.withOpacity(0.4), width: 1.w),
-                                      backgroundColor: AppColor.primaryColor
+                                    side: BorderSide(
+                                      color: AppColor.blackColor.withOpacity(0.4),
+                                      width: 1.w,
+                                    ),
+                                    backgroundColor: AppColor.primaryColor,
                                   ),
-                                  child:  Text("Invite",
+                                  child: Text(
+                                    "Invite",
                                     style: AppTextStyle.semiBold12(AppColor.whiteColor),
                                   ),
                                 ),
+
                               ],
                             );
                           },
@@ -346,7 +364,6 @@ class UserScreen extends GetView<UserController> {
                   return ListView.builder(
                     itemCount: users.length,
                     itemBuilder: (context, index) {
-                      print("userLength are : ${users.length}");
                       final user = users[index];
                       return ActionItemCard(
                         name: user.userName,

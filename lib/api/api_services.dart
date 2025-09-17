@@ -23,7 +23,6 @@ class DioClient {
   Map<String, String> getHeaders({bool isAuthRequired = false}) {
     final headers = {'Content-Type': 'application/json'};
     if (isAuthRequired) {
-      // Prefer saved token from SharedPreferences if _token is null
       final token = _token ?? MySharedPref.getString("accessToken") ?? '';
       if (token.isNotEmpty) headers['Authorization'] = 'Bearer $token';
     }
@@ -52,9 +51,13 @@ class DioClient {
       print("Response data: ${response.data}");
 
       return response.data;
+    } on DioException catch (e) {
+      print(" DioException in GET → ${e.message}");
+      print(" Status code → ${e.response?.statusCode}");
+      print(" Response data → ${e.response?.data}");
+      return e.response?.data;
     } catch (error) {
-
-      print("GET request error: $error");
+      print(" Unknown GET error → $error");
       return null;
     }
   }
@@ -73,7 +76,13 @@ class DioClient {
        }
        return response.data ;
 
-     } catch (error){
+     } on DioException catch (e) {
+       print(" DioException → ${e.message}");
+       print(" Status code → ${e.response?.statusCode}");
+       print(" Response → ${e.response?.data}");
+       return e.response?.data;
+     } catch (error) {
+       print(" Unknown POST error → $error");
        return null;
      }
    }

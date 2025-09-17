@@ -1,5 +1,6 @@
 
 
+import 'package:dio/dio.dart';
 import 'package:survey_app/api/api_url.dart';
 
 import '../../../api/api_services.dart';
@@ -144,6 +145,30 @@ class QuestionRepository {
     } catch (e) {
       print("updateAnswerChoiceGroup error: $e");
       return null;
+    }
+  }
+
+  Future<List<AnswerType>> getAnswerTypes() async {
+    try {
+      final response = await _client.get(
+        url: ApiUrl.answerType,
+        isAuthRequired: true,
+      );
+      print("Raw API response → $response");
+      if (response != null && response['result'] != null) {
+        final List<dynamic> result = response['result'];
+        return result.map((json) => AnswerType.fromJson(json)).toList();
+      } else {
+        return [];
+      }
+    }catch (error) {
+      print("GET request error: $error");
+      if (error is DioException) {
+        print("Dio error type → ${error.type}");
+        print("Dio error response → ${error.response?.data}");
+        print("Dio error status → ${error.response?.statusCode}");
+      }
+      return [];
     }
   }
 

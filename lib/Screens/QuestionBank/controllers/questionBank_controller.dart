@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get/get.dart';
 
-import '../../../api/api_services.dart';
 import '../../../api/api_url.dart';
 import '../../../utils/app_color.dart';
 import '../repository/question_repository.dart';
@@ -13,10 +14,9 @@ class QuestionBankController extends GetxController{
   final QuestionRepository questionRepo;
   QuestionBankController(this.questionRepo);
   var selectedIndex = 0.obs;
-  var selectedOption = ''.obs;
+  var selectedOption = "".obs;
   final selectedCategoriesText = ''.obs;
-
-
+  var answerTypes = <AnswerType>[].obs;
   var isLoading = false.obs;
   var errorMessage = "".obs;
   var answerList = <AnswerGroupResponseModel>[].obs;
@@ -38,23 +38,24 @@ class QuestionBankController extends GetxController{
   TextEditingController optionsController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
 
-  final optionsList =<String> [
-    'Boolean',
-    'Single Choice',
-    'Multiple Choice',
-    'Ranking',
-    'Date',
-    'Numeric',
-    'Integer',
-    'Image',
-    'Slider',
-    'Likert Scale',
-    'Rating Scale',
-    'Matrix Question',
-    'Star Type Rating',
-    'Overall Experience',
-    'Text',
-  ].obs;
+  // final optionsList =<String> [
+  //   'Boolean',
+  //   'Single Choice',
+  //   'Multiple Choice',
+  //   'Ranking',
+  //   'Date',
+  //   'Numeric',
+  //   'Integer',
+  //   'Image',
+  //   'Slider',
+  //   'Likert Scale',
+  //   'Rating Scale',
+  //   'Matrix Question',
+  //   'Star Type Rating',
+  //   'Overall Experience',
+  //   'Text',
+  // ].obs;
+  var optionsList = <String>[].obs;
 
   final categoryList = <String, bool>{
     'Mortgage': false,
@@ -165,7 +166,7 @@ class QuestionBankController extends GetxController{
 
   void filterSearch(String query) {
     if (query.isEmpty) {
-      filteredQuestionList.assignAll(questionList); // ✅ keeps it reactive
+      filteredQuestionList.assignAll(questionList);
     } else {
       filteredQuestionList.assignAll(
         questionList.where((q) =>
@@ -189,7 +190,7 @@ class QuestionBankController extends GetxController{
         "surveyQuestionId": isEdit ? 1 : 0,
         "questionId": isEdit ? (questionId ?? 0) : 0,
         "questionText": textController.text.trim(),
-        "answerTypeId": _mapAnswerTypeToId(selectedOption.value),
+        "answerTypeId": _mapAnswerTypeToId(selectedOption.value.toString()),
         "dateValidationId": 1,
         "isActive": true,
         "createdBy": "admin",
@@ -483,6 +484,23 @@ class QuestionBankController extends GetxController{
       isLoading.value = false;
     }
   }
+
+  void fetchAnswerTypes() async {
+    try {
+      isLoading(true);
+      final result = await questionRepo.getAnswerTypes();
+      print("API Response → $result");
+
+      answerTypes.assignAll(result);
+      optionsList.assignAll(result.map((e) => e.name).toList());
+
+    } catch (e) {
+      print("Error fetching answer types → $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+
 
 
 }

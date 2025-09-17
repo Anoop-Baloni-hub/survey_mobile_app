@@ -80,3 +80,17 @@ class OnboardUserResult {
     );
   }
 }
+
+class CreateUserResponse {
+  final String message;
+  final bool success;
+
+  CreateUserResponse({required this.message, required this.success});
+
+  factory CreateUserResponse.fromJson(Map<String, dynamic> json) {
+    return CreateUserResponse(
+      message: json['message'] ?? '',
+      success: json['result']?['successed'] ?? false,
+    );
+  }
+}

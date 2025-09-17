@@ -31,12 +31,10 @@ class UserController extends GetxController{
   var onboardUsers = <UserResponseModel>[].obs;
 
   void deleteCampaign() {
-
     print("Campaign deleted");
     Get.snackbar("Deleted", "Campaign has been deleted successfully",
-        backgroundColor: AppColor.greenColor, colorText: AppColor.whiteColor);
+        backgroundColor: AppColor.orangeAB, colorText: AppColor.whiteColor);
   }
-
 
   TextEditingController textController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
@@ -44,6 +42,7 @@ class UserController extends GetxController{
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
+  TextEditingController defaultController = TextEditingController();
 
   @override
   void onInit() {
@@ -51,50 +50,6 @@ class UserController extends GetxController{
     fetchInvitedUsers();
     fetchOnboardUsers();
   }
-
-  // void loadUsers() {
-  //   invitedUsers.value = [
-  //     UserModel(
-  //       name: "Shubham Naithani",
-  //       email: "shubhamnaithani27@gmail.com",
-  //       details: const [
-  //         {"label": "Role", "value": "Agent"},
-  //         {"label": "Location", "value": "Miami"},
-  //         {"label": "Category", "value": "Mortgage, Real Estate"},
-  //       ],
-  //     ),
-  //     UserModel(
-  //       name: "Shubham Naithani",
-  //       email: "shubhamnaithani27@gmail.com",
-  //       details: const [
-  //         {"label": "Role", "value": "Agent"},
-  //         {"label": "Location", "value": "Miami"},
-  //         {"label": "Category", "value": "Mortgage, Real Estate"},
-  //       ],
-  //     ),
-  //   ];
-  //   onboardUsers.value = [
-  //     UserModel(
-  //       name: "Anoop Baloni",
-  //       email: "anoopbaloni11@gmail.com",
-  //       details: const [
-  //         {"label": "Role", "value": "Agent"},
-  //         {"label": "Location", "value": "Miami"},
-  //         {"label": "Category", "value": "Mortgage, Real Estate"},
-  //       ],
-  //     ),
-  //     UserModel(
-  //       name: "Anoop Baloni",
-  //       email: "anoopbaloni11@gmail.com",
-  //         details: const [
-  //         {"label": "Role", "value": "Agent"},
-  //         {"label": "Location", "value": "Miami"},
-  //         {"label": "Category", "value": "Mortgage, Real Estate"},
-  //         ],
-  //     ),
-  //   ];
-  // }
-
 
   Future<void> fetchInvitedUsers({int page = 1, int limit = 100}) async {
     try {
@@ -152,6 +107,84 @@ class UserController extends GetxController{
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<CreateUserResponse?> createUser() async {
+    try {
+      isLoading.value = true;
+      String roleName = roleList.entries.firstWhere((e) => e.value,
+          orElse: () => const MapEntry('Agent', true)).key;
+      int roleId = roleName == 'Admin' ? 1 : 2;
+
+      final categoryModel = <Map<String, dynamic>>[];
+      categoryList.forEach((key, value) {
+        if (value) {
+          if (key == 'Mortgage') {
+            categoryModel.add({"categoryId": 1});
+          } else if (key == 'Real State') {
+            categoryModel.add({"categoryId": 2});
+          }
+        }
+      });
+
+      int locationId = 0;
+      if (selectedLocation.value == 'Jacksonville') {
+        locationId = 1;
+      } else if (selectedLocation.value == 'Miami') {
+        locationId = 2;
+      } else if (selectedLocation.value == 'Tampa') {
+        locationId = 5;
+      }
+
+      final body = {
+        "userId": 0,
+        "firstName": firstNameController.text.trim(),
+        "lastName": lastNameController.text.trim(),
+        "email": emailController.text.trim(),
+        "contactNo": phoneController.text.trim(),
+        "roleId": roleId,
+        "roleName": roleName,
+        "locationId": locationId,
+        "defaultSurveyId": null,
+        "createdBy": "admin",
+        "updatedBy": "admin",
+        "isActive": true,
+        "categoryModel": categoryModel,
+      };
+      print("➡️ API POST: ${ApiUrl.newUser}");
+      final response = await ApiUrl.dioClient.post(
+        url: ApiUrl.newUser,
+        requestBody: body,
+        isAuthRequired: true,
+      );
+
+      if (response != null) {
+        final result = CreateUserResponse.fromJson(response);
+
+        Get.snackbar("Success", result.message,
+            backgroundColor: AppColor.greenColor, colorText: AppColor.whiteColor);
+
+        await fetchInvitedUsers();
+        return result;
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString(),
+          backgroundColor: AppColor.redGredientColor, colorText: AppColor.whiteColor);
+    } finally {
+      isLoading.value = false;
+    }
+    return null;
+  }
+
+  void resetForm() {
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    phoneController.clear();
+    categoryController.clear();
+    roleList.updateAll((key, value) => false);
+    categoryList.updateAll((key, value) => false);
+    selectedLocation.value = null;
   }
 
 

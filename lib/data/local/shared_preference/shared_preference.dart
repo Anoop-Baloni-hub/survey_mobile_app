@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MySharedPref {
-  // prevent making instance
   MySharedPref._();
 
   // get storage

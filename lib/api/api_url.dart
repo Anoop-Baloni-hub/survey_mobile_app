@@ -18,6 +18,12 @@ class ApiUrl {
   static String get addQuestion => createAPIUrl('question');
   static String get inviteUser => createAPIUrl('user/get-invited-user');
   static String get onBoardUser => createAPIUrl('user/get-onboarded-user');
+  static String get newUser => createAPIUrl('user');
+  static String get campaign => createAPIUrl('campaign');
+  static String get answerType => createAPIUrl('answer-type');
+  static String get saveSurveyDescription => createAPIUrl('survey/save-survey-description');
+  static String get updateSurveyQuestion => createAPIUrl('survey/update-survey-question');
+  static String get getquestionsList => createAPIUrl('survey/get-questions');
 
 
 }

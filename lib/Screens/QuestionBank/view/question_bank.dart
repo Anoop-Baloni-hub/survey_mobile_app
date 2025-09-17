@@ -169,6 +169,7 @@ class QuestionBank extends GetView<QuestionBankController> {
               child: GestureDetector(
                 onTap: () {
                   if (controller.selectedIndex.value == 0) {
+                    controller.fetchAnswerTypes();
                     showAddQuestionDialog(context, isEdit: false);
                   } else if (controller.selectedIndex.value == 1) {
                     showAddAnswerChoiceDialog(context,isEdit: false);
@@ -339,106 +340,123 @@ void showAddQuestionDialog(
           isEdit ? "Edit Question" : "Add Question",
           style: AppTextStyle.bold14(AppColor.blackColor),
         ),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 1.w,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomTextInput(
-                textEditController: controller.textController,
-                hintTextString: 'Enter Question here',
-              ),
-              h(20),
-              Obx(() => CommonDropdownButton(
-                hintText: 'Select Answer Type',
-                items: controller.optionsList
-                    .map((option) => DropdownMenuItem<String>(
-                  value: option,
-                  child: Text(option),
-                ))
-                    .toList(),
-                value: controller.selectedOption.value.isEmpty
-                    ? null
-                    : controller.selectedOption.value,
-                onChanged: (value) {
-                  controller.selectedOption.value = value!;
-                },
-              )),
-              h(20),
-              TextField(
-                controller: controller.categoryController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: "Select Category",
-                  suffixIcon: const Icon(Icons.arrow_drop_down),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
+        content: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.7,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextInput(
+                  textEditController: controller.textController,
+                  hintTextString: 'Enter Question here',
                 ),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text("Select Categories"),
-                      content: Obx(() => SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children:
-                          controller.categoryList.keys.map((category) {
-                            return CheckboxListTile(
-                              title: Text(category),
-                              value: controller.categoryList[category],
-                              onChanged: (val) {
-                                controller.categoryList[category] =
-                                    val ?? false;
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      )),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("Cancel"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            final selected = controller.categoryList.entries
-                                .where((e) => e.value)
-                                .map((e) => e.key)
-                                .toList();
+                h(20),
+               Obx(() {
+        if (controller.isLoading.value) {
+        return const CircularProgressIndicator();
+        }
 
-                            controller.categoryController.text =
-                                selected.join(", ");
-                            Navigator.pop(context);
-                          },
-                          child: const Text("OK"),
-                        )
-                      ],
+        if (controller.optionsList.isEmpty) {
+        return const Text("No data found");
+        }
+
+        return CommonDropdownButton<String>(
+        hintText: 'Select Answer Type',
+        value: controller.selectedOption.value.isEmpty
+        ? null
+            : controller.selectedOption.value,
+        items: controller.optionsList
+            .map((option) => DropdownMenuItem<String>(
+        value: option,
+        child: Text(option),
+        ))
+            .toList(),
+        onChanged: (value) {
+        if (value != null) {
+        controller.selectedOption.value = value;
+        }
+        },
+        );
+        }),
+
+          h(20),
+                TextField(
+                  controller: controller.categoryController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: "Select Category",
+                    suffixIcon: const Icon(Icons.arrow_drop_down),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
-                  );
-                },
-              ),
-              h(10),
-              if (isEdit)
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextInput(
-                        textEditController: controller.minController,
-                        hintTextString: 'Min Character',
+                  ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text("Select Categories"),
+                        content: Obx(() => SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                            controller.categoryList.keys.map((category) {
+                              return CheckboxListTile(
+                                title: Text(category),
+                                value: controller.categoryList[category],
+                                onChanged: (val) {
+                                  controller.categoryList[category] =
+                                      val ?? false;
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        )),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Cancel"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              final selected = controller.categoryList.entries
+                                  .where((e) => e.value)
+                                  .map((e) => e.key)
+                                  .toList();
+
+                              controller.categoryController.text =
+                                  selected.join(", ");
+                              Navigator.pop(context);
+                            },
+                            child: const Text("OK"),
+                          )
+                        ],
                       ),
-                    ),
-                    w(6),
-                    Expanded(
-                      child: CustomTextInput(
-                        textEditController: controller.maxController,
-                        hintTextString: 'Max Character',
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-            ],
+                h(10),
+                if (isEdit)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextInput(
+                          textEditController: controller.minController,
+                          hintTextString: 'Min Character',
+                        ),
+                      ),
+                      w(6),
+                      Expanded(
+                        child: CustomTextInput(
+                          textEditController: controller.maxController,
+                          hintTextString: 'Max Character',
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
         ),
         actions: [
